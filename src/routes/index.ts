@@ -1,5 +1,9 @@
 import { IRouter, Router } from 'express';
+
+
+const api_version = process.env.npm_package_version;
 const router = Router();
+
 /**
  * Función que conten as rutas da aplicación
  *
@@ -7,7 +11,7 @@ const router = Router();
  */
 function routes(): IRouter {
   router.get('/', (req, res) => {
-    res.json('Proba api v1 ProxectOS');
+    res.json(res.__('WELCOME', api_version));
   });
 
   return router;
