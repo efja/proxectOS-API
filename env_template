@@ -1,3 +1,6 @@
+APP_NAME = ProxectOS API REST
+APP_DESCRIPTION = ProxectOS API REST
+
 APP_HOST = http://localhost
 APP_PORT = 3000
 

@@ -6,6 +6,7 @@ import { IRouter, Router } from 'express';
 // ####################################################################################################
 // ## CONSTANTES
 // ####################################################################################################
+const api_name = process.env.APP_NAME;
 const api_version = process.env.npm_package_version;
 const router = Router();
 
@@ -19,7 +20,7 @@ const router = Router();
  */
 function routes(): IRouter {
   router.get('/', (req, res) => {
-    res.json(res.__('WELCOME', api_version));
+    res.json(res.__('WELCOME', api_name, api_version));
   });
 
   return router;

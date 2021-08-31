@@ -8,7 +8,7 @@ import colors from 'colors';
 import i18n from "i18n";
 
 // ####################################################################################################
-// ## CLASES
+// ## CLASE APP
 // ####################################################################################################
 class App {
     // ************************************************************************************************
@@ -86,7 +86,7 @@ class App {
      */
     public startApp(): void {
         this.app.listen(this.port, () => {
-            console.log(colors.bgBlue(`Aplicación levantda en: ${this.host}:${this.port}/api/${this.api_version}/`));
+            console.log(colors.bgBlue(`Aplicación levantada en: ${this.host}:${this.port}/api/${this.api_version}/`));
         });
     }
 

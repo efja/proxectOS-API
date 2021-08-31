@@ -1,7 +1,7 @@
 {
   "name": "proxectos-api",
   "version": "0.0.1",
-  "description": "API REST",
+  "description": "ProxectOS API REST",
   "main": "build/index.ts",
   "directories": {
     "doc": "doc"
