@@ -1,33 +1,34 @@
 // ####################################################################################################
-// ## IMPORTACIÓNS
+// ## IMPORTS
 // ####################################################################################################
-import express, { Application } from 'express';
-import cors from 'cors';
-import routes from '../routes';
 import colors from 'colors';
+import cors from 'cors';
+import express, { Application } from 'express';
 import i18n from "i18n";
 
+import { routes } from '../routes';
+
 // ####################################################################################################
-// ## CLASE APP
+// ## CLASS APP
 // ####################################################################################################
-class App {
+export class App {
     // ************************************************************************************************
-    // ** ATRIBUTOS
+    // ** ATTRIBUTES
     // ************************************************************************************************
-    public app: Application;
-    public host: string | number;
-    public port: string | number;
-    public api_version: string | number;
-    public env: boolean;
+    private app         : Application;
+    private host        : string | number;
+    private port        : string | number;
+    private apiVersion  : string | number;
+    private env         : boolean;
 
     // ************************************************************************************************
-    // ** CONTRUCTOR
+    // ** CONSTRUCTOR
     // ************************************************************************************************
     constructor() {
-        this.app = express();
-        this.host = process.env.APP_HOST;
-        this.port = process.env.APP_PORT;
-        this.api_version = this.getAPIVersion();
+        this.app        = express();
+        this.host       = process.env.APP_HOST;
+        this.port       = process.env.APP_PORT;
+        this.apiVersion = this.getAPIVersion();
 
         this.initializeLangs();
         this.initializeMiddleWares();
@@ -36,7 +37,7 @@ class App {
     }
 
     // ************************************************************************************************
-    // ** MÉTODOS
+    // ** METHODS
     // ************************************************************************************************
     /**
      * Toma o número de versión a partir da versión definida no ficheiro json
@@ -78,7 +79,7 @@ class App {
      * Inicializa as rutas
      */
     public initializeRoutes(): void {
-        this.app.use(`/api/${this.api_version}`, routes());
+        this.app.use(`/api/${this.apiVersion}`, routes());
     }
 
     /**
@@ -86,7 +87,7 @@ class App {
      */
     public startApp(): void {
         this.app.listen(this.port, () => {
-            console.log(colors.bgBlue(`Aplicación levantada en: ${this.host}:${this.port}/api/${this.api_version}/`));
+            console.log(colors.bgBlue(`Aplicación levantada en: ${this.host}:${this.port}/api/${this.apiVersion}/`));
         });
     }
 
@@ -99,8 +100,3 @@ class App {
         return this.app;
     }
 }
-
-// ####################################################################################################
-// ## EXPORTACIÓNS
-// ####################################################################################################
-export default App;

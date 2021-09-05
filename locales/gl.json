@@ -1,3 +1,6 @@
 {
-    "WELCOME": "Benvidos a %s, versión: %s"
+    "WELCOME": "Benvidos a %s, versión: %s",
+    "COMMON": {
+        "CREATED_DATE": "Data de creación"
+    }
 }
