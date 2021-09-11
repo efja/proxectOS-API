@@ -1,5 +1,5 @@
 // ####################################################################################################
-// ## IMPORTS
+// ## IMPORTACIÓNS
 // ####################################################################################################
 import { Performance } from './performance.model';
 import { Priority } from "./priority.model";
@@ -12,11 +12,11 @@ import { Type } from "./type.model";
 import { User } from "./user.model";
 
 // ####################################################################################################
-// ## CLASS Requirement
+// ## CLASE Requirement
 // ####################################################################################################
 export class Requirement {
     // ************************************************************************************************
-    // ** ATTRIBUTES
+    // ** ATRIBUTOS
     // ************************************************************************************************
     public creationDate             : Date;
     public startDate                : Date;
@@ -33,7 +33,7 @@ export class Requirement {
     public totalEstimatedResources  : number;
     public totalResourcesConsumed   : number;
 
-    // Relations
+    // Relacións
     public stage                    : Stage;
     public state                    : State;
     public priority                 : Priority;
@@ -56,13 +56,13 @@ export class Requirement {
 
     public comments                 : Comment[];
     // ************************************************************************************************
-    // ** CONSTRUCTOR
+    // ** CONSTRUTOR
     // ************************************************************************************************
     constructor(obj?: Partial<Requirement>) {
         Object.assign(this, obj);
     }
 
     // ************************************************************************************************
-    // ** METHODS
+    // ** MÉTODOS
     // ************************************************************************************************
 }
