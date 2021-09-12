@@ -19,7 +19,6 @@ export class App {
     private host        : string | number;
     private port        : string | number;
     private apiVersion  : string | number;
-    private env         : boolean;
 
     // ************************************************************************************************
     // ** CONSTRUTOR

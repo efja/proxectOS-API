@@ -2,6 +2,7 @@
 // ## IMPORTACIÓNS
 // ####################################################################################################
 import { IRouter, Router } from 'express';
+import { ProjectRoutes } from './project.route';
 
 // ####################################################################################################
 // ## CONSTANTES
@@ -19,9 +20,13 @@ const router = Router();
  * @returns router
  */
  export function routes(): IRouter {
+  // Benvida
   router.get('/', (req, res) => {
-    res.json(res.__('WELCOME', api_name, api_version));
+    res.json(res.__('PROJECT.SERVICE.SUCCESS.GET_ALL'));
   });
+
+  // Proxectos
+  router.use('/projects', new ProjectRoutes().getRoutes());
 
   return router;
 };

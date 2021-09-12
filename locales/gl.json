@@ -2,5 +2,16 @@
     "WELCOME": "Benvidos a %s, versión: %s",
     "COMMON": {
         "CREATED_DATE": "Data de creación"
+    },
+    "PROJECT": {
+        "SERVICE": {
+            "SUCCESS": {
+				"GET_ALL": "Tódoslos proxectos recuperaronse correctamente",
+				"GET_SINGLE": "Proxecto obtido con éxito",
+				"CREATE": "Proxecto creado con éxito",
+				"UPDATE": "Proxecto actualizado con éxito",
+				"DELETE": "Proxecto eliminado correctamente"
+            }
+        }
     }
 }
