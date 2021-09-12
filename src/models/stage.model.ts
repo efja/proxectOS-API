@@ -12,6 +12,8 @@ export class Stage {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
+    public id               : string;
+
     public startDate        : Date;
     public finishDate       : Date;
     public targetStartDate  : Date;

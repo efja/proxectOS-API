@@ -17,6 +17,8 @@ export class Performance {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
+    public id               : string;
+
     public creationDate             : Date;
     public startDate                : Date;
     public finishDate               : Date;

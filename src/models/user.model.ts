@@ -12,6 +12,8 @@ export class User {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
+    public id               : string;
+
     public name             : string;
     public firstSurname     : string;
     public secondSurname    : string;

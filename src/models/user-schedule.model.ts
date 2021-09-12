@@ -9,6 +9,8 @@ export class UserSchedule {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
+    public id               : string;
+
     public worksWeekends   : string;
     public weeklyHours     : string;
     public holidays        : Date[];
