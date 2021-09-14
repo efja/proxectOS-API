@@ -1,5 +1,5 @@
 {
-	"WELCOME": "Bienvenidos a %s, versión: %s",
+	"WELCOME": "Bienvenidos a {{app}}, versión: {{version}}",
 	"COMMON": {
 		"CREATED_DATE": "Fecha de creación"
 	},

@@ -1,7 +1,7 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
-import i18n from 'i18n';
+import i18next from "i18next";
 const supertest = require('supertest');
 
 const { App }  = require('../../src/services/api.service');
@@ -50,6 +50,6 @@ describe('Probas básicas de conexión da API', () => {
         const response = await request.get(API_BASE);
 
         expect(response.status).toBe(200);
-        expect(response.body).toBe(i18n.__('WELCOME', api_name, api_version));
+        expect(response.body).toBe(i18next.t('WELCOME', { app: api_name, version: api_version }));
     });
 });

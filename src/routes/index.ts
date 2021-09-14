@@ -22,7 +22,7 @@ const router = Router();
  export function routes(): IRouter {
   // Benvida
   router.get('/', (req, res) => {
-    res.json(res.__('PROJECT.SERVICE.SUCCESS.GET_ALL'));
+    res.json(req.t('WELCOME', { app: api_name, version: api_version }));
   });
 
   // Proxectos

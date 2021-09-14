@@ -41,7 +41,7 @@ export class ProjectController {
       res.status(HttpStatus.OK).json({
         code: HttpStatus.OK,
         data: data,
-        message: res.__('PROJECT.SERVICE.SUCCESS.GET_ALL')
+        message: req.t('PROJECT.SERVICE.SUCCESS.GET_ALL')
       });
     } catch (error) {
       next(error);
@@ -65,7 +65,7 @@ export class ProjectController {
       res.status(HttpStatus.OK).json({
         code: HttpStatus.OK,
         data: data,
-        message: res.__('PROJECT.SERVICE.SUCCESS.GET_ALL')
+        message: req.t('PROJECT.SERVICE.SUCCESS.GET_ALL')
       });
     } catch (error) {
       next(error);
@@ -92,7 +92,7 @@ export class ProjectController {
       res.status(HttpStatus.CREATED).json({
         code: HttpStatus.CREATED,
         data: data,
-        message: res.__('PROJECT.SERVICE.SUCCESS.GET_SINGLE')
+        message: req.t('PROJECT.SERVICE.SUCCESS.GET_SINGLE')
       });
     } catch (error) {
       next(error);
@@ -119,7 +119,7 @@ export class ProjectController {
       res.status(HttpStatus.ACCEPTED).json({
         code: HttpStatus.ACCEPTED,
         data: data,
-        message: res.__('PROJECT.SERVICE.SUCCESS.UPDATE')
+        message: req.t('PROJECT.SERVICE.SUCCESS.UPDATE')
       });
     } catch (error) {
       next(error);
@@ -145,7 +145,7 @@ export class ProjectController {
       res.status(HttpStatus.OK).json({
         code: HttpStatus.OK,
         data: {},
-        message: res.__('PROJECT.SERVICE.SUCCESS.DELETE')
+        message: req.t('PROJECT.SERVICE.SUCCESS.DELETE')
       });
     } catch (error) {
       next(error);

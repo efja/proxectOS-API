@@ -4,7 +4,10 @@
 import colors from 'colors';
 import cors from 'cors';
 import express, { Application } from 'express';
-import i18n from "i18n";
+
+import i18next from "i18next";
+import i18nextBack from "i18next-fs-backend";
+import i18nextMidd from "i18next-http-middleware";
 
 import { routes } from '../routes';
 
@@ -54,14 +57,17 @@ export class App {
      * Inicializa os idiomas
      */
     public initializeLangs(): void {
-        i18n.configure(
-            {
-                locales:['en','es', 'gl'],
-                defaultLocale: 'gl',
-                register: global,
-                directory: __dirname + '/../../locales'
-            }
-        );
+        i18next
+            .use(i18nextBack)
+            .use(i18nextMidd.LanguageDetector)
+            .init(
+                {
+                    fallbackLng: 'gl',
+                    backend: {
+                        loadPath: './locales/{{lng}}.json'
+                    }
+                }
+            );
     }
 
     /**
@@ -69,7 +75,7 @@ export class App {
      */
     public initializeMiddleWares(): void {
         this.app.use(cors());
-        this.app.use(i18n.init);
+        this.app.use(i18nextMidd.handle(i18next));
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(express.json());
     }
