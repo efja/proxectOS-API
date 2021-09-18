@@ -1,7 +1,7 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
-import express, { IRouter } from 'express';
+import express, { Router, IRouter } from 'express';
 import { ProjectController } from '../controllers/project.controller';
 
 // ####################################################################################################
@@ -12,7 +12,7 @@ export class ProjectRoutes {
   // ** ATRIBUTOS
   // ************************************************************************************************
   private projectController = new ProjectController();
-  private router = express.Router();
+  private router = Router();
 
   // ************************************************************************************************
   // ** CONSTRUTOR

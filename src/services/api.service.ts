@@ -32,10 +32,10 @@ export class App {
         this.port       = process.env.APP_PORT;
         this.apiVersion = this.getAPIVersion();
 
-        this.initializeLangs();
-        this.initializeMiddleWares();
-        this.initializeRoutes();
-        this.startApp();
+        this.middlewares();
+        this.languages();
+        this.routes();
+        this.start();
     }
 
     // ************************************************************************************************
@@ -56,7 +56,7 @@ export class App {
     /**
      * Inicializa os idiomas
      */
-    public initializeLangs(): void {
+    public languages(): void {
         i18next
             .use(i18nextBack)
             .use(i18nextMidd.LanguageDetector)
@@ -73,7 +73,7 @@ export class App {
     /**
      * Inicializa os middlewares
      */
-    public initializeMiddleWares(): void {
+    public middlewares(): void {
         this.app.use(cors());
         this.app.use(i18nextMidd.handle(i18next));
         this.app.use(express.urlencoded({ extended: true }));
@@ -83,14 +83,14 @@ export class App {
     /**
      * Inicializa as rutas
      */
-    public initializeRoutes(): void {
+    public routes(): void {
         this.app.use(`/api/${this.apiVersion}`, routes());
     }
 
     /**
      * Arranca a aplicación
      */
-    public startApp(): void {
+    public start(): void {
         this.app.listen(this.port, () => {
             console.log(colors.bgBlue(`Aplicación levantada en: ${this.host}:${this.port}/api/${this.apiVersion}/`));
         });
