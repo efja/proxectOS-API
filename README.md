@@ -92,8 +92,8 @@ Lista de autores:
 
    [repoProxecto]: <https://gitlab.iessanclemente.net/dawm/a18franciscogc>
 
-   [repoProxecto-API]: <https://gitlab.iessanclemente.net/a18franciscogc/proxectos-api-API>
+   [repoProxecto-API]: <https://gitlab.iessanclemente.net/a18franciscogc/proxectos-api>
 
-   [repoProxecto-DB]: <https://gitlab.iessanclemente.net/a18franciscogc/proxectos-api-DB>
+   [repoProxecto-DB]: <https://gitlab.iessanclemente.net/a18franciscogc/proxectos-db>
 
-   [repoProxecto-UI]: <https://gitlab.iessanclemente.net/a18franciscogc/proxectos-api-UI>
+   [repoProxecto-UI]: <https://gitlab.iessanclemente.net/a18franciscogc/proxectos-ui>
