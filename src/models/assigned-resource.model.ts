@@ -1,33 +1,37 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
-import { Role } from "./role.model";
-import { User } from "./user.model";
+import { CustomBaseEntity } from "./custom-base-entity.model";
+
+import { CommentApp } from './commentapp.model';
+import { User } from './user.model';
+import { Resource } from './resource.model';
+
 
 // ####################################################################################################
-// ## CLASE Repository
+// ## CLASE AssignedResource
 // ####################################################################################################
-export class Repository {
+export class AssignedResource extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public id               : string;
+    public description  : string;
 
-    public creationDate     : Date;
-    public expirationDate?  : Date;
-
-    public name             : string;
-    public description      : string;
-    public uri              : string;
+    public amount       : number;
+    public unitCost     : number;
 
     // Relacións
-    public createdBy        : User;
-    public targetRoles      : Role[];
+    public createdBy    : User;
+
+    public resource     : Resource;
+
+    public comments     : CommentApp[] = [];
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
-    constructor(obj?: Partial<Repository>) {
+    constructor(obj?: Partial<AssignedResource>) {
+        super();
         Object.assign(this, obj);
     }
 

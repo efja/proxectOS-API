@@ -3,15 +3,97 @@
     "COMMON": {
         "CREATED_DATE": "Creation date"
     },
-    "PROJECT": {
-        "SERVICE": {
-            "SUCCESS": {
-                "GET_ALL": "All projects fetched successfully",
-                "GET_SINGLE": "Project fetched successfully",
-                "CREATE": "Project created successfully",
-                "UPDATE": "Project updated successfully",
-                "DELETE": "Project deleted successfully"
-            }
-        }
-    }
+	"SUCCESS": {
+		"CREATE": "{{entity}} created successfully",
+		"CREATE_LIST": "{{entity}} created successfully",
+		"DELETE": "Entity {{entity}} with ID {{id}} has been successfully removed",
+		"GET": "{{entity}} obtained successfully",
+		"GET_LIST": "All {{entity}} have been successfully retrieved",
+		"UPDATE": "{{entity}} with ID {{id}} updated successfully"
+	},
+	"ERROR": {
+		"ALREADY_EXIST": "The {{entity}} with ID {{id}} already exists",
+		"ALREADY_EXIST_LIST": "Some of the entities {{entity}} (or all) are already",
+		"BAD_REQUEST": "Bad request for {{entity}}",
+		"CONFLICT": "There was a conflict with the operation of {{entity}} with ID {{id}}",
+		"CREATE": "Could not create {{entity}}",
+		"CREATE_LIST": "Could not create {{entity}}",
+		"DELETE": "Could not delete {{entity}} with ID {{id}}",
+		"NOT_FOUND": "Could not find any {{entity}} with ID {{id}}",
+		"NOT_FOUND_LIST": "No {{entity}} found",
+		"UPDATE": "Could not update {{entity}} with ID {{id}}"
+	},
+
+	"ASSIGNED_RESOURCE": {
+		"NAME": "Assigned Resource",
+		"NAME_PLURAL": "Assigned Resources"
+	},
+	"ASSIGNED_STAGE": {
+		"NAME": "Assigned Stage",
+		"NAME_PLURAL": "Assigned Stages"
+	},
+	"ASSIGNED_USER": {
+		"NAME": "Assigned User",
+		"NAME_PLURAL": "Assigned Users"
+	},
+	"COMMENT": {
+		"NAME": "Comment",
+		"NAME_PLURAL": "Comments"
+	},
+	"PERFORMANCE": {
+		"NAME": "Performance",
+		"NAME_PLURAL": "Performances"
+	},
+	"PRIORITY": {
+		"NAME": "Priority",
+		"NAME_PLURAL": "Priorities"
+	},
+	"PROJECT": {
+		"NAME": "Project",
+		"NAME_PLURAL": "Projects"
+	},
+	"REQUIREMENT": {
+		"NAME": "Resource",
+		"NAME_PLURAL": "Resources"
+	},
+	"RESOURCE": {
+		"NAME": "Recurso",
+		"NAME_PLURAL": "Recursos"
+	},
+	"STAGE": {
+		"NAME": "Stage",
+		"NAME_PLURAL": "Stages"
+	},
+	"STATE": {
+		"NAME": "State",
+		"NAME_PLURAL": "States"
+	},
+	"STATE_HISTORY": {
+		"NAME": "State History",
+		"NAME_PLURAL": "States History"
+	},
+	"TYPE": {
+		"NAME": "Type",
+		"NAME_PLURAL": "Types"
+	},
+	"USER": {
+		"NAME": "User",
+		"NAME_PLURAL": "Users"
+	},
+	"USER_CONTACT": {
+		"NAME": "User Contact",
+		"NAME_PLURAL": "User Contacts"
+	},
+	"USER_CONTACT_TYPE": {
+		"NAME": "User Contact Type",
+		"NAME_PLURAL": "User Contact Types"
+	},
+	"USER_GROUP": {
+		"NAME": "User Group",
+		"NAME_PLURAL": "User Groups"
+	},
+	"USER_SCHEDULE": {
+		"NAME": "User Schedule",
+		"NAME_PLURAL": "User Schedules"
+	}
 }

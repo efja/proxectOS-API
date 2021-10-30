@@ -3,48 +3,27 @@
 // ####################################################################################################
 import { CustomBaseEntity } from "./custom-base-entity.model";
 
-import { AssignedUser } from './assigned-user.model';
-import { CommentApp } from './commentapp.model';
-import { PerformanceApp } from './performanceapp.model';
-import { Priority } from "./priority.model";
-import { RepositoryApp } from "./repositoryapp.model";
-import { Type } from "./type.model";
-import { User } from "./user.model";
+import { Role } from './role.model';
 
 // ####################################################################################################
-// ## CLASE Requirement
+// ## CLASE User
 // ####################################################################################################
-export class Requirement extends CustomBaseEntity {
+export class UserGroup extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public startDate?           : Date;
-    public finishDate?          : Date;
-    public targetStartDate?     : Date;
-    public targetFinishDate?    : Date;
-
-    public name                 : string;
-    public description          : string;
+    public name         : string;
+    public description  : string;
 
     // Relacións
-    public priority             : Priority;
-    public type                 : Type;
-
-    public createdBy            : User;
-
-    public adminUsers           : AssignedUser[] = [];
-
-    public performances         : PerformanceApp[] = [];
-
-    public repositories         : RepositoryApp[] = [];
-
-    public comments             : CommentApp[] = [];
+    public defaultRoles : Role[] = [];
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
-    constructor(obj?: Partial<Requirement>) {
+    constructor(obj?: Partial<UserGroup>) {
         super();
+
         Object.assign(this, obj);
     }
 

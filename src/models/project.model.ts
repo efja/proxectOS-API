@@ -1,49 +1,50 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
-import { Repository } from './repository.model';
+import { CustomBaseEntity } from "./custom-base-entity.model";
+
+import { AssignedStage } from './assigned-stage.model';
+import { AssignedUser } from './assigned-user.model';
+import { CommentApp } from './commentapp.model';
+import { RepositoryApp } from './repositoryapp.model';
 import { Requirement } from './requirement.model';
-import { Role } from './role.model';
-import { Stage } from './stage.model';
-import { State } from './state.model';
 import { User } from './user.model';
 
 // ####################################################################################################
 // ## CLASE Project
 // ####################################################################################################
-export class Project {
+export class Project extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public id               : string;
+    public startDate?           : Date;
+    public finishDate?          : Date;
+    public targetStartDate?     : Date;
+    public targetFinishDate?    : Date;
 
-    public creationDate     : Date;
-    public startDate        : Date;
-    public finishDate       : Date;
-    public targetStartDate  : Date;
-    public targetFinishDate : Date;
-
-    public name             : string;
-    public description      : string;
+    public name                 : string;
+    public description          : string;
 
     // Relacións
-    public stage            : Stage;
-    public state            : State;
-    public requirements     : Requirement[];
+    public assignedStages       : AssignedStage[] = [];
 
-    public assignedRoles    : Role[];
+    public createdBy            : User;
 
-    public assignedUsers    : User[];
-    public validatingUsers  : User[];
+    public adminUsers           : AssignedUser[] = [];
 
-    public repositories     : Repository[];
+    public productOwner         : User;
 
-    public comments         : Comment[];
+    public requirements         : Requirement[] = [];
+
+    public repositories         : RepositoryApp[] = [];
+
+    public comments             : CommentApp[] = [];
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
     constructor(obj?: Partial<Project>) {
+        super();
         Object.assign(this, obj);
     }
 

@@ -3,15 +3,97 @@
 	"COMMON": {
 		"CREATED_DATE": "Data de creación"
 	},
+	"SUCCESS": {
+		"CREATE": "Entidade {{entity}} creada con éxito",
+		"CREATE_LIST": "Entidades {{entity}} creadas con éxito",
+		"DELETE": "A entidade {{entity}} con ID {{id}} foi eliminada correctamente",
+		"GET": "Entidade {{entity}} obtida con éxito",
+		"GET_LIST": "Tódolas entidades {{entity}} recuperáronse correctamente",
+		"UPDATE": "Entidade {{entity}} coa ID {{id}} actualizada con éxito"
+	},
+	"ERROR": {
+		"ALREADY_EXIST": "A entidade {{entity}} coa ID {{id}} xa existe",
+		"ALREADY_EXIST_LIST": "Algunha das entidades {{entity}} (ou todas) xa esiten",
+		"BAD_REQUEST": "Petición errónea para a entidade{{entity}}",
+		"CONFLICT": "Producíuse un conflito coa operación da entidade {{entity}} coa ID {{id}}",
+		"CREATE": "Non se puido crear a entidade {{entity}}",
+		"CREATE_LIST": "Non se puideron crear as entidades {{entity}}",
+		"DELETE": "Non se puido eliminar a entidade {{entity}} coa ID {{id}}",
+		"NOT_FOUND": "Non se atopou ningunha entidade {{entity}} coa ID {{id}}",
+		"NOT_FOUND_LIST": "Non se atopou ningunha entidade {{entity}}",
+		"UPDATE": "Non se puido actualizar a entidade {{entity}} coa ID {{id}}"
+	},
+
+	"ASSIGNED_RESOURCE": {
+		"NAME": "Recurso Asignado",
+		"NAME_PLURAL": "Recursos Asignados"
+	},
+	"ASSIGNED_STAGE": {
+		"NAME": "Etapa Asignada",
+		"NAME_PLURAL": "Etapas Asignadas"
+	},
+	"ASSIGNED_USER": {
+		"NAME": "Usuario Asignado",
+		"NAME_PLURAL": "Usuarios Asignados"
+	},
+	"COMMENT": {
+		"NAME": "Comentario",
+		"NAME_PLURAL": "Comentarios"
+	},
+	"PERFORMANCE": {
+		"NAME": "Actuación",
+		"NAME_PLURAL": "Actuacións"
+	},
+	"PRIORITY": {
+		"NAME": "Prioridade",
+		"NAME_PLURAL": "Prioridades"
+	},
 	"PROJECT": {
-		"SERVICE": {
-			"SUCCESS": {
-				"GET_ALL": "Tódolos proxectos recuperáronse correctamente",
-				"GET_SINGLE": "Proxecto obtido con éxito",
-				"CREATE": "Proxecto creado con éxito",
-				"UPDATE": "Proxecto actualizado con éxito",
-				"DELETE": "Proxecto eliminado correctamente"
-			}
-		}
+		"NAME": "Proxecto",
+		"NAME_PLURAL": "Proxectos"
+	},
+	"REQUIREMENT": {
+		"NAME": "Requerimento",
+		"NAME_PLURAL": "Requerimentos"
+	},
+	"RESOURCE": {
+		"NAME": "Recurso",
+		"NAME_PLURAL": "Recursos"
+	},
+	"STAGE": {
+		"NAME": "Etapa",
+		"NAME_PLURAL": "Etapas"
+	},
+	"STATE": {
+		"NAME": "Estado",
+		"NAME_PLURAL": "Estados"
+	},
+	"STATE_HISTORY": {
+		"NAME": "Histórico de Estado",
+		"NAME_PLURAL": "Históricos de Estado"
+	},
+	"TYPE": {
+		"NAME": "Tipo",
+		"NAME_PLURAL": "Tipos"
+	},
+	"USER": {
+		"NAME": "Usuario",
+		"NAME_PLURAL": "Usuarios"
+	},
+	"USER_CONTACT": {
+		"NAME": "Contacto de Usuario",
+		"NAME_PLURAL": "Contactos de Usuario"
+	},
+	"USER_CONTACT_TYPE": {
+		"NAME": "Tipo Contacto",
+		"NAME_PLURAL": "Tipos Contacto"
+	},
+	"USER_GROUP": {
+		"NAME": "Grupo de Usuario",
+		"NAME_PLURAL": "Grupos de Usuario"
+	},
+	"USER_SCHEDULE": {
+		"NAME": "Calendario de Usuario",
+		"NAME_PLURAL": "Calendarios de Usuario"
 	}
 }

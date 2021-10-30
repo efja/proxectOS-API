@@ -3,47 +3,42 @@
 // ####################################################################################################
 import { CustomBaseEntity } from "./custom-base-entity.model";
 
-import { AssignedUser } from './assigned-user.model';
 import { CommentApp } from './commentapp.model';
-import { PerformanceApp } from './performanceapp.model';
-import { Priority } from "./priority.model";
-import { RepositoryApp } from "./repositoryapp.model";
-import { Type } from "./type.model";
-import { User } from "./user.model";
+import { User } from './user.model';
 
 // ####################################################################################################
-// ## CLASE Requirement
+// ## ENUMS
 // ####################################################################################################
-export class Requirement extends CustomBaseEntity {
+export enum ResourceScale {
+    HOUR,
+    DAY,
+    WEEK,
+    UNIT,
+}
+
+// ####################################################################################################
+// ## CLASE Resource
+// ####################################################################################################
+export class Resource extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public startDate?           : Date;
-    public finishDate?          : Date;
-    public targetStartDate?     : Date;
-    public targetFinishDate?    : Date;
+    public name         : string;
+    public description  : string;
 
-    public name                 : string;
-    public description          : string;
+    public scale        : ResourceScale.HOUR;
+
+    public unitCost     : number;
 
     // Relacións
-    public priority             : Priority;
-    public type                 : Type;
+    public createdBy    : User;
 
-    public createdBy            : User;
-
-    public adminUsers           : AssignedUser[] = [];
-
-    public performances         : PerformanceApp[] = [];
-
-    public repositories         : RepositoryApp[] = [];
-
-    public comments             : CommentApp[] = [];
+    public comments     : CommentApp[] = [];
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
-    constructor(obj?: Partial<Requirement>) {
+    constructor(obj?: Partial<Resource>) {
         super();
         Object.assign(this, obj);
     }

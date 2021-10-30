@@ -1,63 +1,56 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
-import { Comment } from './comment.model';
+import { CustomBaseEntity } from "./custom-base-entity.model";
+
+import { AssignedResource } from './assigned-resource.model';
+import { AssignedUser } from './assigned-user.model';
+import { AssignedStage } from './assigned-stage.model';
+import { CommentApp } from './commentapp.model';
 import { Priority } from './priority.model';
-import { ResourcesEstimation } from './resoruces-estimation.model';
-import { Role } from './role.model';
-import { Stage } from './stage.model';
-import { State } from './state.model';
 import { Type } from './type.model';
 import { User } from './user.model';
+import { UserGroup } from './user-group.model';
 
 // ####################################################################################################
-// ## CLASE Performance
+// ## CLASE PerformanceApp
 // ####################################################################################################
-export class Performance {
+export class PerformanceApp extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public id               : string;
-
-    public creationDate             : Date;
-    public startDate                : Date;
-    public finishDate               : Date;
-    public targetStartDate          : Date;
-    public targetFinishDate         : Date;
+    public startDate?               : Date;
+    public finishDate?              : Date;
+    public targetStartDate?         : Date;
+    public targetFinishDate?        : Date;
 
     public name                     : string;
     public description              : string;
 
-    public totalEstimatedHours      : number;
-    public totalHoursConsumed       : number;
-
-    public totalEstimatedResources  : number;
-    public totalResourcesConsumed   : number;
-
     // Relacións
-    public stage                    : Stage;
-    public state                    : State;
+    public performances             : PerformanceApp[] = [];
+
+    public assignedStages           : AssignedStage[] = [];
+
     public priority                 : Priority;
     public type                     : Type;
 
-    public assignedRoles            : Role[];
-
     public createdBy                : User;
-    public assignedUsers            : User[];
-    public validatingUsers          : User[];
 
-    public estimatedHours           : ResourcesEstimation;
-    public hoursConsumed            : ResourcesEstimation;
+    public assignedUsers            : AssignedUser[] = [];
 
-    public estimatedResources       : ResourcesEstimation;
-    public resourcesConsumed        : ResourcesEstimation;
+    public visibleToUserGroups      : UserGroup[] = [];
 
-    public comments                 : Comment[];
+    public estimatedResources       : AssignedResource[] = [];
+    public resourcesConsumed        : AssignedResource[] = [];
+
+    public comments                 : CommentApp[] = [];
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
-    constructor(obj?: Partial<Performance>) {
+    constructor(obj?: Partial<PerformanceApp>) {
+        super();
         Object.assign(this, obj);
     }
 

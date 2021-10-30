@@ -1,41 +1,25 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
-import { Role } from "./role.model";
-import { State } from "./state.model";
-import { User } from "./user.model";
+import { CustomBaseEntity } from "./custom-base-entity.model";
 
 // ####################################################################################################
 // ## CLASE Stage
 // ####################################################################################################
-export class Stage {
+export class Stage extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public id               : string;
-
-    public startDate        : Date;
-    public finishDate       : Date;
-    public targetStartDate  : Date;
-    public targetFinishDate : Date;
-
     public name             : string;
     public description      : string;
 
     // Relacións
-    public state            : State;
-
-    public assignedRoles    : Role[];
-
-    public assignedUsers    : User[];
-    public validatingUsers  : User[];
-
-    public comments         : Comment[];
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
     constructor(obj?: Partial<Stage>) {
+        super();
         Object.assign(this, obj);
     }
 

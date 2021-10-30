@@ -1,24 +1,25 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
+import { CustomBaseEntity } from "./custom-base-entity.model";
 
 // ####################################################################################################
 // ## CLASE UserSchedule
 // ####################################################################################################
-export class UserSchedule {
+export class UserSchedule extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public id               : string;
-
-    public worksWeekends   : string;
-    public weeklyHours     : string;
-    public holidays        : Date[];
+    public description      : string;
+    public worksWeekends    : boolean;
+    public weeklyHours      : number;
+    public holidays         : Date[];
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
     constructor(obj?: Partial<UserSchedule>) {
+        super();
         Object.assign(this, obj);
     }
 

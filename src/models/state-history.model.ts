@@ -1,43 +1,37 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
-import { Performance } from './performance.model';
-import { Project } from './project.model';
-import { Requirement } from './requirement.model';
+import { CustomBaseEntity } from "./custom-base-entity.model";
+
+import { AssignedStage } from './assigned-stage.model';
 import { Role } from './role.model';
-import { Stage } from './stage.model';
 import { State } from './state.model';
 import { User } from './user.model';
 
 // ####################################################################################################
 // ## CLASE StateHistory
 // ####################################################################################################
-export class StateHistory {
+export class StateHistory extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public id               : string;
-
-    public creationDate : string;
-    public log          : string;
+    public log                  : string;
 
     // Relacións
-    public oldState     : State;
-    public newState     : State;
+    public oldState?            : State;
+    public newState             : State;
 
-    public targetRoles  : Role[];
+    public createdBy            : User;
 
-    public createdBy    : User;
+    public visibleToUserGroups  : Role[] = [];
 
-    public project?     : Project;
-    public performance? : Performance;
-    public requirement? : Requirement;
-    public stage?       : Stage;
+    public assignedStage        : AssignedStage;
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
     constructor(obj?: Partial<StateHistory>) {
+        super();
         Object.assign(this, obj);
     }
 

@@ -1,17 +1,99 @@
 {
-	"WELCOME": "Bienvenidos a {{app}}, versión: {{version}}",
+	"WELCOME": "Bienvenidos la {{app}}, versión: {{version}}",
 	"COMMON": {
 		"CREATED_DATE": "Fecha de creación"
 	},
+	"SUCCESS": {
+		"CREATE": "Entidad {{entity}} creada con éxito",
+		"CREATE_LIST": "Entidades {{entity}} creadas con éxito",
+		"DELETE": "La entidad {{entity}} con ID {{id}} ha sido eliminada correctamente",
+		"GET": "Entidad {{entity}} obtenida con éxito",
+		"GET_LIST": "Todas las entidades {{entity}} se han recuperado correctamente",
+		"UPDATE": "Entidad {{entity}} con ID {{id}} actualizada con éxito"
+	},
+	"ERROR": {
+		"ALREADY_EXIST": "La entidad {{entity}} con ID {{id}} ya existe",
+		"ALREADY_EXIST_LIST": "Alguna de las entidades {{entity}} (o todas) ya esite",
+		"BAD_REQUEST": "Petición errónea para {{entity}}",
+		"CONFLICT": "Se ha producido un conflicto con la operación de {{entity}} con ID {{id}}",
+		"CREATE": "No se ha podido crear la entidad {{entity}}",
+		"CREATE_LIST": "No se han podido crear las entidades {{entity}}",
+		"DELETE": "No se ha podido eliminar la entidad {{entity}} con ID {{id}}",
+		"NOT_FOUND": "No se ha podido encontrar ninguna entidad {{entity}} con ID {{id}}",
+		"NOT_FOUND_LIST": "No se ha encontrado ninguna entidad {{entity}}",
+		"UPDATE": "No se ha podido actualizar la entidad {{entity}} con ID {{id}}"
+	},
+
+	"ASSIGNED_RESOURCE": {
+		"NAME": "Recurso Asignado",
+		"NAME_PLURAL": "Recursos Asignados"
+	},
+	"ASSIGNED_STAGE": {
+		"NAME": "Etapa Asignada",
+		"NAME_PLURAL": "Etapas Asignadas"
+	},
+	"ASSIGNED_USER": {
+		"NAME": "Usuario Asignado",
+		"NAME_PLURAL": "Usuarios Asignados"
+	},
+	"COMMENT": {
+		"NAME": "Comentario",
+		"NAME_PLURAL": "Comentarios"
+	},
+	"PERFORMANCE": {
+		"NAME": "Actuación",
+		"NAME_PLURAL": "Actuaciones"
+	},
+	"PRIORITY": {
+		"NAME": "Prioridad",
+		"NAME_PLURAL": "Prioridades"
+	},
 	"PROJECT": {
-		"SERVICE": {
-			"SUCCESS": {
-				"GET_ALL": "Todos los proyectos se recuperaron correctamente",
-				"GET_SINGLE": "Proyecto obtenido con éxito",
-				"CREATE": "Proyecto creado con éxito",
-				"UPDATE": "Proyecto actualizado con éxito",
-				"DELETE": "Proyecto eliminado correctamente"
-			}
-		}
+		"NAME": "Proyecto",
+		"NAME_PLURAL": "Proyectos"
+	},
+	"REQUIREMENT": {
+		"NAME": "Requisito",
+		"NAME_PLURAL": "Requisitos"
+	},
+	"RESOURCE": {
+		"NAME": "Recurso",
+		"NAME_PLURAL": "Recursos"
+	},
+	"STAGE": {
+		"NAME": "Etapa",
+		"NAME_PLURAL": "Etapas"
+	},
+	"STATE": {
+		"NAME": "Estado",
+		"NAME_PLURAL": "Estados"
+	},
+	"STATE_HISTORY": {
+		"NAME": "Histórico de Estado",
+		"NAME_PLURAL": "Históricos de Estado"
+	},
+	"TYPE": {
+		"NAME": "Tipo",
+		"NAME_PLURAL": "Tipos"
+	},
+	"USER": {
+		"NAME": "Usuario",
+		"NAME_PLURAL": "Usuarios"
+	},
+	"USER_CONTACT": {
+		"NAME": "Contacto de Usuario",
+		"NAME_PLURAL": "Contactos de Usuario"
+	},
+	"USER_CONTACT_TYPE": {
+		"NAME": "Tipo Contacto",
+		"NAME_PLURAL": "Tipos Contacto"
+	},
+	"USER_GROUP": {
+		"NAME": "Grupo de Usuario",
+		"NAME_PLURAL": "Grupos de Usuario"
+	},
+	"USER_SCHEDULE": {
+		"NAME": "Calendario de Usuario",
+		"NAME_PLURAL": "Calendarios de Usuario"
 	}
 }

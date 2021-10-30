@@ -1,25 +1,40 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
+import { CustomBaseEntity } from "./custom-base-entity.model";
+
+import { AssignedUser } from './assigned-user.model';
+import { CommentApp } from './commentapp.model';
+import { User } from "./user.model";
+import { UserGroup } from './user-group.model';
 
 // ####################################################################################################
-// ## CLASE Permissions
-// ####################################################################################################
-export class Permissions {
+// ## CLASE RepositoryApp
+// ####################################################################################################@Entity()
+export class RepositoryApp extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public id               : string;
+    public expirationDate?      : Date;
 
-    public delete : boolean;
-    public read   : boolean;
-    public update : boolean;
-    public write  : boolean;
+    public name                 : string;
+    public description          : string;
+    public uri                  : string;
+
+    // Relacións
+    public createdBy            : User;
+
+    public assignedUsers        : AssignedUser[] = [];
+
+    public visibleToUserGroups  : UserGroup[] = [];
+
+    public comments             : CommentApp[] = [];
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
-    constructor(obj?: Partial<Permissions>) {
+    constructor(obj?: Partial<RepositoryApp>) {
+        super();
         Object.assign(this, obj);
     }
 

@@ -3,18 +3,15 @@
 // ####################################################################################################
 import { CustomBaseEntity } from "./custom-base-entity.model";
 
-import { AssignedUser } from './assigned-user.model';
 import { CommentApp } from './commentapp.model';
-import { PerformanceApp } from './performanceapp.model';
-import { Priority } from "./priority.model";
-import { RepositoryApp } from "./repositoryapp.model";
-import { Type } from "./type.model";
-import { User } from "./user.model";
+import { User } from './user.model';
+import { Stage } from './stage.model';
+import { State } from "./state.model";
 
 // ####################################################################################################
-// ## CLASE Requirement
+// ## CLASE AssignedPermissions
 // ####################################################################################################
-export class Requirement extends CustomBaseEntity {
+export class AssignedStage extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
@@ -23,27 +20,21 @@ export class Requirement extends CustomBaseEntity {
     public targetStartDate?     : Date;
     public targetFinishDate?    : Date;
 
-    public name                 : string;
-    public description          : string;
-
     // Relacións
-    public priority             : Priority;
-    public type                 : Type;
-
     public createdBy            : User;
 
-    public adminUsers           : AssignedUser[] = [];
+    public stage                : Stage;
 
-    public performances         : PerformanceApp[] = [];
+    public currentState         : State;
 
-    public repositories         : RepositoryApp[] = [];
+    public validationUsers      : User[] = [];
 
     public comments             : CommentApp[] = [];
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
-    constructor(obj?: Partial<Requirement>) {
+    constructor(obj?: Partial<AssignedStage>) {
         super();
         Object.assign(this, obj);
     }

@@ -1,36 +1,31 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
+import { CustomBaseEntity } from "./custom-base-entity.model";
+
+import { Role } from './role.model';
+import { User } from './user.model';
+import { UserGroup } from './user-group.model';
 
 // ####################################################################################################
-// ## ENUMS
+// ## CLASE AssignedPermissions
 // ####################################################################################################
-export enum ResourcesEstimationScale {
-    HOURS,
-    DAYS,
-    WEEKS,
-}
-
-// ####################################################################################################
-// ## CLASE ResourcesEstimation
-// ####################################################################################################
-export class ResourcesEstimation {
+export class AssignedUser extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public id               : string;
+    // Relacións
+    public createdBy            : User;
 
-    public name         : string;
-    public description  : string;
-
-    public scale        : ResourcesEstimationScale;
-    public amount       : number;
-    public cost         : number;
+    public assignedUser         : User;
+    public assignedRoles        : Role[] = [];
+    public assignedUserGroups   : UserGroup[] = [];
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
-    constructor(obj?: Partial<ResourcesEstimation>) {
+    constructor(obj?: Partial<AssignedUser>) {
+        super();
         Object.assign(this, obj);
     }
 

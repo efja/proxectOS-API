@@ -1,40 +1,31 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
-
-// ####################################################################################################
-// ## ENUMS
-// ####################################################################################################
-export enum TargetRole {
-    PERFORMANCE,
-    PROJECT,
-    REQUIREMENT,
-    STAGE,
-    STATE,
-    SYSTEM,
-}
+import { CustomBaseEntity } from "./custom-base-entity.model";
 
 // ####################################################################################################
 // ## CLASE Role
 // ####################################################################################################
-export class Role {
+export class Role extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public id               : string;
+    public name             : string;
+    public description      : string;
+    public isSystemAdmin    : boolean;
 
-    public name         : string;
-    public description  : string;
-    public scope        : string;
+    public create           : boolean;
+    public delete           : boolean;
+    public read             : boolean;
+    public update           : boolean;
 
     // Relacións
-    public permissions  : Permissions;
-    public TargetRole   : TargetRole;
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
     constructor(obj?: Partial<Role>) {
+        super();
         Object.assign(this, obj);
     }
 

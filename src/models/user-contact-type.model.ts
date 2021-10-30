@@ -1,32 +1,22 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
-import { Role } from './role.model';
-import { User } from './user.model';
+import { CustomBaseEntity } from "./custom-base-entity.model";
 
 // ####################################################################################################
-// ## CLASE Comment
+// ## CLASE UserContact
 // ####################################################################################################
-export class Comment {
+export class UserContactType extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public id               : string;
-
-    public creationDate    : Date;
-    public expirationDate  : Date;
-
-    public title           : string;
-    public message         : string;
-
-    // Relacións
-    public createdBy       : User;
-    public targetRoles     : Role[];
+    public description  : string;
 
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
-    constructor(obj?: Partial<Comment>) {
+    constructor(obj?: Partial<UserContactType>) {
+        super();
         Object.assign(this, obj);
     }
 
