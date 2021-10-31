@@ -25,7 +25,7 @@ const router = Router();
     res.json(req.t('WELCOME', { app: api_name, version: api_version }));
   });
 
-  // Proxectos
+  // Project
   router.use('/projects', new ProjectRoutes().getRoutes());
 
   return router;
