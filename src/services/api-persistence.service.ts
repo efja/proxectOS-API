@@ -32,7 +32,6 @@ export class ApiPersistenceService {
 
     try {
       result = await got(uri);
-      console.log(result.body);
     } catch (error) {
       result = error.response.body;
     }
@@ -44,7 +43,6 @@ export class ApiPersistenceService {
 
     try {
       result = await got(uri);
-      console.log(result.body);
     } catch (error) {
       result = null;
     }
