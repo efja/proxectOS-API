@@ -8,18 +8,16 @@ import { req, res, next } from 'express';
 import qs from 'qs';
 
 import { ResponseData } from '../interfaces/response-data.interface';
-import { ProjectService } from '../services/project.service';
-import { Project } from '../models/project.model';
 
 // ####################################################################################################
-// ## CLASE ProjectController
+// ## CLASE CurrentUserController
 // ####################################################################################################
-export class ProjectController {
+export class CurrentUserController {
   // ************************************************************************************************
   // ** ATRIBUTOS
   // ************************************************************************************************
   private TRANSLATION_NAME_MODEL : string = 'PROJECT';
-  public projectService : ProjectService = new ProjectService();
+  public currentUserService = null; // : CurrentUserService = new CurrentUserService();
 
   // ************************************************************************************************
   // ** CONSTRUTOR
@@ -46,12 +44,12 @@ export class ProjectController {
       let error;
       let code = HttpStatus.CONFLICT;
 
-      const project: Project = new Project(req.body);
+      const currentUser = null; //: CurrentUser = new CurrentUser(req.body);
 
       let data;
 
-      if (this.hasMinimumAttributes(project)) {
-        data = await this.projectService.create(project);
+      if (this.hasMinimumAttributes(currentUser)) {
+        data = null; // = await this.currentUserService.create(currentUser);
       }
 
       if (
@@ -63,7 +61,7 @@ export class ProjectController {
         message = req.t('SUCCESS.CREATE', { entity: req.t(`${this.TRANSLATION_NAME_MODEL}.NAME`) });
       } else if (data == HttpStatus.CONFLICT) {
         data = undefined;
-        error = req.t('ERROR.ALREADY_EXIST', { entity: req.t(`${this.TRANSLATION_NAME_MODEL}.NAME`), id: project.id });
+        error = req.t('ERROR.ALREADY_EXIST', { entity: req.t(`${this.TRANSLATION_NAME_MODEL}.NAME`), id: currentUser.id });
       } else {
         data = undefined;
         error = req.t('ERROR.CREATE', { entity: req.t(`${this.TRANSLATION_NAME_MODEL}.NAME`) });
@@ -99,25 +97,25 @@ export class ProjectController {
       let error;
       let code = HttpStatus.CONFLICT;
 
-      const projects: Project[] = req.body;
+      const currentUsers = null; //: CurrentUser[] = req.body;
 
       let data;
       let continueProcess: boolean = true;
 
-      for (let i = 0; i < projects.length; i++) {
-        let item = projects[i];
+      for (let i = 0; i < currentUsers.length; i++) {
+        let item = currentUsers[i];
 
         if (this.hasMinimumAttributes(item)) {
           // Crease un proxecto novo para asegurar que vai a ser do tipo correcto
-          projects[i] = new Project(item);
+          currentUsers[i] = null; // = new CurrentUser(item);
         } else {
           continueProcess = false;
           break;
         }
       }
 
-      if (continueProcess && projects && projects.length > 0) {
-        data = await this.projectService.createList(projects);
+      if (continueProcess && currentUsers && currentUsers.length > 0) {
+        data = null; // = await this.currentUserService.createList(currentUsers);
       }
 
       if (
@@ -180,7 +178,7 @@ export class ProjectController {
 
       const queryParams = qs.parse(query);
 
-      let data = await this.projectService.getAll(queryParams);
+      let data = null; // = await this.currentUserService.getAll(queryParams, orderBy, limit, offset);
 
       if (
         data != undefined &&
@@ -230,7 +228,7 @@ export class ProjectController {
       const { id } = req.params;
       const queryParams = qs.parse(req.query);
 
-      let data = await this.projectService.get(id, queryParams);
+      let data = null; // = await this.currentUserService.get(id, queryParams);
 
       if (
         data != undefined &&
@@ -278,12 +276,12 @@ export class ProjectController {
       let code = HttpStatus.NOT_FOUND;
 
       const { id } = req.params;
-      const project: Project = new Project(req.body);
+      const currentUser = null; //: CurrentUser = new CurrentUser(req.body);
 
       let data;
 
-      if (this.hasMinimumAttributes(project)) {
-        data = await this.projectService.update(id, project);
+      if (this.hasMinimumAttributes(currentUser)) {
+        data = null; // = await this.currentUserService.update(id, currentUser);
       }
 
       if (
@@ -346,7 +344,7 @@ export class ProjectController {
 
       if (objPatch.length > 0) {
 
-        data = await this.projectService.modify(id, objPatch);
+        data = null; // = await this.currentUserService.modify(id, objPatch);
 
         if (
           data != undefined &&
@@ -404,7 +402,7 @@ export class ProjectController {
 
       const { id } = req.params;
 
-      let data = await this.projectService.delete(id);
+      let data  = null; //= await this.currentUserService.delete(id);
 
       if (
         data != undefined &&
@@ -440,12 +438,12 @@ export class ProjectController {
   // ** UTILIDADES
   // ************************************************************************************************
   /**
-   * Comproba se o Project pasado ten os atributos mínimos que o modelo necesita.
+   * Comproba se o CurrentUser pasado ten os atributos mínimos que o modelo necesita.
    *
-   * @param item Project que se vai a avaliar
+   * @param item CurrentUser que se vai a avaliar
    * @returns Boolean
    */
-  private hasMinimumAttributes = (item: Project): Boolean => {
+  private hasMinimumAttributes = (item: any): Boolean => {
     let result = false;
 
     if (

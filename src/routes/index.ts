@@ -3,6 +3,9 @@
 // ####################################################################################################
 import { IRouter, Router } from 'express';
 import { ProjectRoutes } from './project.route';
+import { CurrentUserRoutes } from './current-user.route';
+import { AdminRoutes } from './admin.route';
+import { SummaryRoutes } from './summary.route';
 
 // ####################################################################################################
 // ## CONSTANTES
@@ -25,8 +28,17 @@ const router = Router();
     res.json(req.t('WELCOME', { app: api_name, version: api_version }));
   });
 
+  // Información personal
+  router.use('/me', new CurrentUserRoutes().getRoutes());
+
+  // Admin
+  router.use('/admin', new AdminRoutes().getRoutes());
+
   // Project
   router.use('/projects', new ProjectRoutes().getRoutes());
+
+  // Resumos
+  router.use('/summaries', new SummaryRoutes().getRoutes());
 
   return router;
 };

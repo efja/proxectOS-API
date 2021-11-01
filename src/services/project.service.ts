@@ -2,12 +2,12 @@
 // ## IMPORTACIÓNS
 // ####################################################################################################
 import HttpStatus from 'http-status-codes';
+import got from 'got';
 import { Operation } from 'fast-json-patch';
 import * as jsonpatch from 'fast-json-patch';
 
 import { DBConnection } from '../config/config-db';
 import { Project } from '../models/project.model';
-import { getEntityForUpdate } from '../helpers/entity-construct.helper';
 
 // ####################################################################################################
 // ## CLASE ProjectService
@@ -16,8 +16,9 @@ export class ProjectService {
   // ************************************************************************************************
   // ** ATRIBUTOS
   // ************************************************************************************************
-  private db          : DBConnection;
-  private respository : any;
+  private db        : DBConnection;
+  private uri       : string;
+  private endpoint  : string = 'projects';
 
   // ************************************************************************************************
   // ** CONSTRUTOR
@@ -31,6 +32,7 @@ export class ProjectService {
   // ************************************************************************************************
   private async createDbConnection() {
     this.db = new DBConnection();
+    this.uri = `${this.db.getConnectionString()}/${this.endpoint}`;
 
     await this.db.init();
   }
@@ -68,17 +70,21 @@ export class ProjectService {
   // ------------------------------------------------------------------------------------------------
   // -- GET
   // ------------------------------------------------------------------------------------------------
-  public async getAll(
-    filters?: any,
-    order?: any,
-    limit: number = 0,
-    offset: number = 0
-  ): Promise<any> {
+  public async getAll(filters?: any): Promise<any> {
     let result : any = HttpStatus.NOT_FOUND;
 
+    let uri = `${this.uri}`;
+
+    if (filters) {
+      uri += `?${filters}`;
+    }
+
     try {
+      console.log('uri :>> ', uri);
+      result = await got(uri);
+      console.log('result :>> ', result);
     } catch (error) {
-      result = null;
+      result = error.response.body;
     }
 
     return result;
