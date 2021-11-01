@@ -1,15 +1,21 @@
+import { ApiPersistenceService } from '../services/api-persistence.service';
+import HttpStatus from 'http-status-codes';
 // ####################################################################################################
 // ## IMPORTACIÓNS
+// ####################################################################################################
+
+// ####################################################################################################
+// ## CONSTANTES
 // ####################################################################################################
 const {
   PERSISTENCE_API_HOST,
   PERSISTENCE_API_PORT,
   PERSISTENCE_API_ROUTE,
+  PERSISTENCE_API_LOGIN_ROUTE,
 
   PERSISTENCE_API_LOGIN,
   PERSISTENCE_API_PASS,
 } = process.env;
-
 
 // ####################################################################################################
 // ## CLASE Priority
@@ -18,12 +24,17 @@ export class DBConnection {
   // ************************************************************************************************
   // ** ATRIBUTOS
   // ************************************************************************************************
-  protected host        : string;
-  protected port        : number;
-  protected route       : string;
+  protected host          : string;
+  protected port          : number;
+  protected route         : string;
 
-  protected user        : string;
-  protected password    : string;
+  protected user          : string;
+  protected password      : string;
+  protected clientUri     : string;
+
+  protected token         : string = null;
+
+  protected apiDbService  : ApiPersistenceService = new ApiPersistenceService();
 
   // ************************************************************************************************
   // ** CONSTRUTOR
@@ -37,13 +48,23 @@ export class DBConnection {
   // ************************************************************************************************
 
   /**
-   * Devolve a cadea de conexión co SXBD.
+   * Devolve a cadea de conexión coa API de persistencia.
    *
    * @returns string
    */
-  public getConnectionString() {
-    return `http://${this.host}:${this.port}/${this.route}`; // TODO: implementar login na api de persistencia
-    // return `http://${this.user}:*******@${this.host}:${this.port}/${this.route}`;
+  public getConnectionString(
+  ) {
+    return this.clientUri;
+  }
+
+  /**
+   * Devolve a cadea de conexión para facer login coa API de persistencia.
+   *
+   * @returns string
+   */
+  public getLoginString() {
+    // return `${this.clientUri}/${PERSISTENCE_API_LOGIN_ROUTE}`;
+    return `${this.clientUri}`;
   }
 
   // ************************************************************************************************
@@ -74,49 +95,51 @@ export class DBConnection {
     user      : string,
     password  : string
   ) {
-    this.host     = host;
-    this.port     = Number(port);
-    this.route    = route;
-    this.user     = user;
-    this.password = password;
-
-    this.configure();
-  }
-
-  /**
-   * Incia os parámteros do SXBD segundo os parámetros pasados no construtor.
-   */
-  public configure(): void {
+    this.host       = host;
+    this.port       = Number(port);
+    this.route      = route;
+    this.user       = user;
+    this.password   = password;
+    this.clientUri  = `${this.host}:${this.port}/${this.route}`;
   }
 
   // ************************************************************************************************
   // ** MÉTODOS DE INICIO E PARADA
   // ************************************************************************************************
   /**
-   * Inicia os parámetros da conexión co SXBD.
+   * Inicia os parámetros da conexión coa API de persistencia.
    *
    * @returns Promise<boolean>
    */
-  public async init(): Promise<DBConnection> {
-    return this;
+  public async init() {
+    let result = await this.apiDbService.login(this.getLoginString());
+
+    // this.token = result.body.token; // TODO: xestionar login na api de persistencia
+    this.token = result.body;
+
+    return (result.statusCode != undefined && result.statusCode != null)
+      ? result.statusCode
+      : result;
   }
 
   /**
-   * Inicia a conexión co SXBD e devolve un string cá cadea de conexión.
+   * Inicia a conexión coa API de persistencia e devolve un string cá cadea de conexión.
    *
    * @returns Promise<string>
    */
   public async startInfo(): Promise<string> {
-    try {
-      await this.init();
+    let result = null;
 
-      if (true) {
+    try {
+      result = await this.init();
+
+      if (result == HttpStatus.OK && this.token != null) {
         return `Conexión á BD correcta. Cadea de conexión <${this.getConnectionString()}>`;
       } else {
         throw new Error(`Erro ó conectar coa BD. Cadea de conexión <${this.getConnectionString()}>`);
       }
     } catch (error) {
-      let result = new Error(`Erro ó iniciar a BD. Cadea de conexión <${this.getConnectionString()}>`);
+      result = new Error(`Erro ó iniciar a BD. Cadea de conexión <${this.getConnectionString()}>`);
       result.stack = error;
 
       throw result;
@@ -124,17 +147,21 @@ export class DBConnection {
   }
 
   /**
-   * Remata a conexión co SXBD.
+   * Remata a conexión coa API de persistencia.
    */
   public async close() {
-    return this;
+    let result = await this.apiDbService.logout(this.getConnectionString());
+
+    return (result.statusCode != undefined && result.statusCode != null)
+      ? result.statusCode
+      : result;
   }
 
   // ************************************************************************************************
   // ** MÉTODOS CONEXIÓN Á BD
   // ************************************************************************************************
   /**
-   * Remata a conexión co SXBD.
+   * Remata a conexión coa API de persistencia.
    */
   public async checkConnection() {
     let result = false;

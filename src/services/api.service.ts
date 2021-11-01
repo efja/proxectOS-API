@@ -127,7 +127,9 @@ export class App {
      * Inicia a conexión coa Base de Datos
      */
     public async dbConnection() {
-        await this.db.startInfo();
+        let result = await this.db.startInfo();
+
+        console.log(colors.green(result));
 
         return this;
     }
