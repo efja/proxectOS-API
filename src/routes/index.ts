@@ -2,10 +2,10 @@
 // ## IMPORTACIÓNS
 // ####################################################################################################
 import { IRouter, Router } from 'express';
-import { ProjectRoutes } from './project.route';
-import { CurrentUserRoutes } from './current-user.route';
-import { AdminRoutes } from './admin.route';
-import { SummaryRoutes } from './summary.route';
+import { ProjectRoutes } from './models/project.route';
+import { CurrentUserRoutes } from './business-service/current-user.route';
+import { AdminRoutes } from './business-service/admin.route';
+import { SummaryRoutes } from './business-service/summary.route';
 
 // ####################################################################################################
 // ## CONSTANTES

@@ -2,7 +2,7 @@
 // ## IMPORTACIÓNS
 // ####################################################################################################
 import { Router, IRouter } from 'express';
-import { SummaryController } from '../controllers/summary.controller';
+import { SummaryController } from '../../controllers/business-service/summary.controller';
 
 // ####################################################################################################
 // ## CLASE SummaryRoutes

@@ -2,19 +2,19 @@
 // ####################################################################################################
 // ## IMPORTACIÓNS
 // ####################################################################################################
-import { ProjectService } from '../services/models/project.service';
-import { Project } from '../models/project.model';
-import { BaseController } from './base.controller';
+import { Project } from '../../models/project.model';
+import { ProjectService } from '../../services/models/project.service';
+import { BaseController } from '../base.controller';
 
 // ##################################################################################################
 // ## CONSTANTES
 // ##################################################################################################
-const TRANSLATION_NAME_MODEL : string = 'PROJECT';
+const TRANSLATION_NAME_MODEL : string = 'CURRENT_USER';
 
 // ####################################################################################################
-// ## CLASE ProjectController
+// ## CLASE CurrentUserController
 // ####################################################################################################
-export class ProjectController extends BaseController<Project> {
+export class CurrentUserController extends BaseController<Project> {
   // ************************************************************************************************
   // ** ATRIBUTOS
   // ************************************************************************************************

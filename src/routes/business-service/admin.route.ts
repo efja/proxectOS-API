@@ -2,7 +2,7 @@
 // ## IMPORTACIÓNS
 // ####################################################################################################
 import { Router, IRouter } from 'express';
-import { AdminController } from '../controllers/admin.controller';
+import { AdminController } from '../../controllers/business-service/admin.controller';
 
 // ####################################################################################################
 // ## CLASE AdminRoutes
