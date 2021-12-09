@@ -34,7 +34,7 @@ const router = Router();
   // Admin
   router.use('/admin', new AdminRoutes().getRoutes());
 
-  // Project
+  // Proxectos
   router.use('/projects', new ProjectRoutes().getRoutes());
 
   // Resumos

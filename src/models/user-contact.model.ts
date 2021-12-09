@@ -3,7 +3,7 @@
 // ####################################################################################################
 import { CustomBaseEntity } from "./custom-base-entity.model";
 
-import { UserContactTypeApp } from './user-contact-type.model';
+import { UserContactType } from './user-contact-type.model';
 
 // ####################################################################################################
 // ## CLASE UserContact
@@ -12,7 +12,7 @@ export class UserContact extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public type    : UserContactTypeApp;
+    public type    : UserContactType;
     public contact : string;
 
     // ************************************************************************************************
