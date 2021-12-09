@@ -5,11 +5,13 @@ import { CustomBaseEntity } from "./custom-base-entity.model";
 
 import { AssignedUser } from './assigned-user.model';
 import { CommentApp } from './commentapp.model';
-import { PerformanceApp } from './performanceapp.model';
 import { Priority } from "./priority.model";
 import { RepositoryApp } from "./repositoryapp.model";
-import { Type } from "./type.model";
+import { TypeApp } from "./typeapp.model";
 import { User } from "./user.model";
+import { UserGroup } from './user-group.model';
+import { AssignedResource } from './assigned-resource.model';
+import { AssignedStage } from './assigned-stage.model';
 
 // ####################################################################################################
 // ## CLASE Requirement
@@ -26,19 +28,33 @@ export class Requirement extends CustomBaseEntity {
     public name                 : string;
     public description          : string;
 
-    // Relacións
-    public priority             : Priority;
-    public type                 : Type;
+    // Relacións reflexivas
+    public dependencies         : Requirement[] = [];
+
+    // Relacións usuarios
+    public adminUsers           : AssignedUser[] = [];
+
+    public assignedUsers        : AssignedUser[] = [];
 
     public createdBy            : User;
 
-    public adminUsers           : AssignedUser[] = [];
+    public visibleToUserGroups  : UserGroup[] = [];
 
-    public performances         : PerformanceApp[] = [];
+    // Relacións recursos
+    public estimatedResources   : AssignedResource[] = [];
+
+    public resourcesConsumed    : AssignedResource[] = [];
 
     public repositories         : RepositoryApp[] = [];
 
+    // Relacións
+    public assignedStages       : AssignedStage[] = [];
+
     public comments             : CommentApp[] = [];
+
+    public priority             : Priority;
+
+    public type                 : TypeApp;
 
     // ************************************************************************************************
     // ** CONSTRUTOR

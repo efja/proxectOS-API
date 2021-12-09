@@ -9,7 +9,7 @@ process.env.API_PREFIX = "v";
 // CAPA DE PERSISTENCIA
 process.env.PERSISTENCE_API_HOST  = "http://localhost";
 process.env.PERSISTENCE_API_PORT  = "3001";
-process.env.PERSISTENCE_API_ROUTE = "api/v0/";
+process.env.PERSISTENCE_API_ROUTE = "api/v1/";
 
 process.env.PERSISTENCE_API_LOGIN = "admin";
 process.env.PERSISTENCE_API_PASS  = "abc123.";

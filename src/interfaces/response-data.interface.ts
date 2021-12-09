@@ -7,3 +7,10 @@ export interface ResponseData {
     message?    : string,
     error?      : string,
 }
+
+export interface ResultQuery {
+  response  : ResponseData,
+  id?       : string,
+  from?     : number,
+  limit?    : number,
+}

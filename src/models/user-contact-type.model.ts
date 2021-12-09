@@ -6,7 +6,7 @@ import { CustomBaseEntity } from "./custom-base-entity.model";
 // ####################################################################################################
 // ## CLASE UserContact
 // ####################################################################################################
-export class UserContactType extends CustomBaseEntity {
+export class UserContactTypeApp extends CustomBaseEntity {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
@@ -15,7 +15,7 @@ export class UserContactType extends CustomBaseEntity {
     // ************************************************************************************************
     // ** CONSTRUTOR
     // ************************************************************************************************
-    constructor(obj?: Partial<UserContactType>) {
+    constructor(obj?: Partial<UserContactTypeApp>) {
         super();
         Object.assign(this, obj);
     }

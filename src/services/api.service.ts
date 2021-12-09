@@ -9,7 +9,7 @@ import i18next from "i18next";
 import i18nextBack from "i18next-fs-backend";
 import i18nextMidd from "i18next-http-middleware";
 
-import queryType from 'query-types';
+import queryTypeApp from 'query-types';
 import { DBConnection } from '../config/config-db';
 
 import { routes } from '../routes';
@@ -86,7 +86,7 @@ export class App {
     public middlewares(): void {
         this.app.use(cors());
         this.app.use(i18nextMidd.handle(i18next));
-        this.app.use(queryType.middleware())
+        this.app.use(queryTypeApp.middleware())
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(express.json());
     }
