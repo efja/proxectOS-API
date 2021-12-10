@@ -1,3 +1,5 @@
+import { User } from "../models/user.model";
+
 export interface ResponseData {
     code        : number,
     data        : any,
@@ -8,9 +10,32 @@ export interface ResponseData {
     error?      : string,
 }
 
+export interface ResponseMe {
+  code          : number,
+  me            : User,
+  comments      : ResponseData,
+  projects      : ResponseData,
+  repositories  : ResponseData,
+  requirements  : ResponseData,
+  resources     : ResponseData,
+}
+
 export interface ResultQuery {
-  response  : ResponseData,
-  id?       : string,
-  from?     : number,
-  limit?    : number,
+  code    : number,
+  data    : any,
+  from?   : number,
+  limit?  : number,
+}
+
+export interface ResultCheckType {
+  getObjectType   : any,
+  isArray         : boolean,
+  isBoolean       : boolean,
+  isDate          : boolean,
+  isNull          : boolean,
+  isNumber        : boolean,
+  isObject        : boolean,
+  isObjectID      : boolean,
+  isString        : boolean,
+  isUndefined     : boolean,
 }

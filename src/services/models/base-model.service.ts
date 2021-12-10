@@ -96,11 +96,15 @@ export abstract class BaseModelService<T> {
   // ------------------------------------------------------------------------------------------------
   // -- GET
   // ------------------------------------------------------------------------------------------------
-  public async getAll(filters?: string): Promise<ResponseData> {
+  public async getAll(
+    filters?  : string,
+    limit     : number = 0,
+    offset    : number = 0
+  ): Promise<ResponseData> {
     let result: ResultQuery = {
       response  : null,
-      from  : 0, // offset,
-      limit : 0, // limit,
+      from  : offset,
+      limit : limit,
     };
 
     let uri = `${this.uri}`;

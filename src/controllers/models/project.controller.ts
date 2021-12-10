@@ -4,7 +4,7 @@
 // ####################################################################################################
 import { ProjectService } from '../../services/models/project.service';
 import { Project } from '../../models/project.model';
-import { BaseController } from '../base.controller';
+import { BaseModelController } from './base-model.controller';
 
 // ##################################################################################################
 // ## CONSTANTES
@@ -14,7 +14,7 @@ const TRANSLATION_NAME_MODEL : string = 'PROJECT';
 // ####################################################################################################
 // ## CLASE ProjectController
 // ####################################################################################################
-export class ProjectController extends BaseController<Project> {
+export class ProjectController extends BaseModelController<Project> {
   // ************************************************************************************************
   // ** ATRIBUTOS
   // ************************************************************************************************

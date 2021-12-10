@@ -1,25 +1,14 @@
-// ####################################################################################################
+// ##################################################################################################
 // ## IMPORTACIÓNS
-// ####################################################################################################
+// ##################################################################################################
 import qs from 'qs';
 import moment from 'moment';
-import {
-    isJSONValue,
-    isJSONObject,
-    isJSONArray,
-    isString,
-    isNumber,
-    isBoolean,
-    isNull,
-    isUndefined,
-    JSONObject,
-    JSONValue,
-    JSONArray
-  } from "types-json";
+import { Types } from 'mongoose';
+import { checkType } from './check-typeshelper';
 
-// ####################################################################################################
+// ##################################################################################################
 // ## CLASE AssignedResource
-// ####################################################################################################
+// ##################################################################################################
 export class APIFilter {
     // ************************************************************************************************
     // ** ATRIBUTOS
@@ -27,8 +16,11 @@ export class APIFilter {
     public booleanFilters   : any[] = [];
     public dateFilters      : any[] = [];
     public numberFilters    : any[] = [];
+    public objectIdFilters  : any[] = [];
     public orderByFilters   : any[] = [];
     public stringFilters    : any[] = [];
+
+    public stringSensitive  : boolean = false;
 
     // Relacións
 
@@ -36,7 +28,7 @@ export class APIFilter {
     // ** CONSTRUTOR
     // ************************************************************************************************
     constructor(filters?: any) {
-        this.parseFilters(filters);
+        this.parseFilters(qs.parse(filters));
     }
 
     // ************************************************************************************************
@@ -52,31 +44,44 @@ export class APIFilter {
             let paramValue = filters[paramKey];
 
             if (paramKey.toLowerCase() === 'sort' || paramKey.toLowerCase() === 'orderby') {
-                this.orderByFilters =  paramValue.split(',');
+                this.orderByFilters = paramValue.split(',');
             } else {
-                if (isBoolean(paramValue)) {
+                let checksTypes = checkType(paramValue);
+
+                if (checksTypes.isBoolean) {
                     this.booleanFilters.push(
                         { [paramKey] : Boolean(paramValue) }
                     );
-                } else if (isNumber(paramValue)) {
+                } else if (checksTypes.isNumber) {
                     this.numberFilters.push(
                         { [paramKey] : Number(paramValue) }
                     );
-                } else {
+                } else if (checksTypes.isDate) {
                     let date = moment(paramValue, true); // Modo estricto
 
-                    if (date.isValid()) {
-                        this.dateFilters.push(
-                            { [paramKey] : date.toISOString() }
-                        );
-                    } else {
-                        this.stringFilters.push(
-                            { [paramKey] : paramValue }
-                        );
-                    }
+                    this.dateFilters.push(
+                        // Para buscar dentro do mesmo día poñemos un rango de búsqueda entre a primeira hora e a última do mesmo
+                        { [paramKey] : { '$gte' : date.startOf('day').toISOString(), '$lt': date.endOf('day').toISOString() } }
+                    );
+                } else if (checksTypes.isObjectID) {
+                    this.objectIdFilters.push(
+                        { [paramKey] : new Types.ObjectId(paramValue) }
+                    );
+                } else {
+                    this.stringFilters.push(this.getStringFilter(paramKey, paramValue));
                 }
             }
         }
+    }
+
+    private getStringFilter(key: string, filter: string, stringSensitive: boolean = this.stringSensitive): Object {
+        let options : string = "g";
+
+        if (!stringSensitive) {
+            options += "i";
+        }
+
+        return { [key] : { '$re': new RegExp(filter, options) } }
     }
 
     private getObjectKeyValue(list: any[], result : Object) {
@@ -84,6 +89,22 @@ export class APIFilter {
             let item = list[0];
             result[Object.keys(item)[0]] = Object.values(item)[0];
         }
+    }
+
+    public getQueryObj() {
+        let result : Object = {};
+
+        if (this.orderByFilters.length > 0) {
+            result['orderBy'] = this.orderByFilters;
+        }
+
+        this.getObjectKeyValue(this.booleanFilters, result);
+        this.getObjectKeyValue(this.numberFilters, result);
+        this.getObjectKeyValue(this.dateFilters, result);
+        this.getObjectKeyValue(this.stringFilters, result);
+        this.getObjectKeyValue(this.objectIdFilters, result);
+
+        return result;
     }
 
     public getQueryString() {
@@ -104,6 +125,5 @@ export class APIFilter {
         );
 
         return queryParameters;
-
     }
 }

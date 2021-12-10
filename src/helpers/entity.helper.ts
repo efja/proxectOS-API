@@ -15,3 +15,11 @@ export async function createClassFromName(name: string) {
 
     return new ns[name]();
 }
+
+export function getClassProperty(item, prop) {
+    return item.__meta.props.find(x => x.name == prop)
+}
+
+export function getClassName(item) {
+    return item.__meta.name
+}

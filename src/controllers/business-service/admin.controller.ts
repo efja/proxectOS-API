@@ -3,7 +3,6 @@
 // ## IMPORTACIÓNS
 // ####################################################################################################
 import { Project } from '../../models/project.model';
-import { ProjectService } from '../../services/models/project.service';
 import { BaseController } from '../base.controller';
 
 // ##################################################################################################
@@ -14,21 +13,17 @@ const TRANSLATION_NAME_MODEL : string = 'ADMIN';
 // ####################################################################################################
 // ## CLASE AdminController
 // ####################################################################################################
-export class AdminController extends BaseController<Project> {
+export class AdminController extends BaseController {
   // ************************************************************************************************
   // ** ATRIBUTOS
   // ************************************************************************************************
   protected TRANSLATION_NAME_MODEL : string = TRANSLATION_NAME_MODEL;
-  protected minimumAttributes      : string[] = [
-    'name',
-    'description',
-  ];
 
   // ************************************************************************************************
   // ** CONSTRUTOR
   // ************************************************************************************************
   constructor() {
-    super(Project, ProjectService)
+    super(Project)
   }
 
   // ************************************************************************************************

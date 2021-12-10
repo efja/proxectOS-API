@@ -26,11 +26,11 @@ export class Project extends CustomBaseEntity {
     public description          : string;
 
     // Relacións
-    public assignedStages       : AssignedStage[] = [];
+    public assignedStage        : AssignedStage;
 
     public createdBy            : User;
 
-    public adminUsers           : AssignedUser[] = [];
+    public assignedUsers        : AssignedUser[] = [];
 
     public productOwner         : User;
 

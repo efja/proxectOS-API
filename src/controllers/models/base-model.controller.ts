@@ -1,34 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// ####################################################################################################
+// ##################################################################################################
 // ## IMPORTACIÓNS
-// ####################################################################################################
+// ##################################################################################################
 import HttpStatus from 'http-status-codes';
 import { Operation } from 'fast-json-patch';
 import { req, res, next } from 'express';
 
-import { ResponseData, ResponseMe } from '../../interfaces/response-data.interface';
+import { ResponseData } from '../../interfaces/response-data.interface';
 import { APIFilter } from '../../helpers/uri-filter.helper';
 
-import { CommentAppService } from '../../services/models/commentapp.service';
-import { ProjectService } from '../../services/models/project.service';
-import { RepositoryAppService } from '../../services/models/repositoryapp.service';
-import { RequirementService } from '../../services/models/requirement.service';
-import { ResourceService } from '../../services/models/resource.service';
-import { UserService } from '../../services/models/user.service';
-
 // ##################################################################################################
-// ## CONSTANTES
+// ## CLASE BaseController
 // ##################################################################################################
-const TRANSLATION_NAME_MODEL : string = 'CURRENT_USER';
-
-// ####################################################################################################
-// ## CLASE CurrentUserController
-// ####################################################################################################
-export class CurrentUserController  {
+export abstract class BaseModelController<T> {
   // ************************************************************************************************
   // ** ATRIBUTOS
   // ************************************************************************************************
-  protected TRANSLATION_NAME_MODEL : string = TRANSLATION_NAME_MODEL;
+  protected TRANSLATION_NAME_MODEL  : string;
+  protected minimumAttributes       : string[] = [];
   protected serviceName             : any;
   protected service                 : any;
 
@@ -36,13 +25,13 @@ export class CurrentUserController  {
   // ** CONSTRUTOR
   // ************************************************************************************************
   constructor(
-    private commentAppService = new CommentAppService,
-    private projectService = new ProjectService,
-    private repositoryAppService = new RepositoryAppService,
-    private requirementService = new RequirementService,
-    private resourceService = new ResourceService,
-    private userService = new UserService,
-  ) { }
+    protected entity,
+    serviceName
+  ) {
+    this.serviceName = serviceName;
+
+    this.service = new this.serviceName();
+  }
 
   // ************************************************************************************************
   // ** MÉTODOS CRUD (CREACIÓN)
@@ -61,6 +50,12 @@ export class CurrentUserController  {
   ): Promise<any> => {
     try {
       let response;
+
+      if (Object.keys(req.body).length > 0) {
+        const obj: T = this.getNewEntity(req.body);
+
+        response = await this.service.create(obj);
+      }
 
       const responseData : ResponseData = this.processResponse(req, response, 'CREATE');
 
@@ -85,6 +80,28 @@ export class CurrentUserController  {
     try {
       let response;
 
+      if (Object.keys(req.body).length > 0) {
+        const objs: T[] = req.body;
+
+        let continueProcess: boolean = true;
+
+        for (let i = 0; i < objs.length; i++) {
+          let item = objs[i];
+
+          if (this.hasMinimumAttributes(item)) {
+            // Crease un proxecto novo para asegurar que vai a ser do tipo correcto
+            objs[i] = this.getNewEntity(item);
+          } else {
+            continueProcess = false;
+            break;
+          }
+        }
+
+        if (continueProcess && objs && objs.length > 0) {
+          response = await this.service.createList(objs);
+        }
+      }
+
       const responseData : ResponseData = this.processResponse(req, response, 'CREATE_LIST');
 
       res.status(responseData.code).json(responseData);
@@ -96,50 +113,6 @@ export class CurrentUserController  {
   // ************************************************************************************************
   // ** MÉTODOS CRUD (READ)
   // ************************************************************************************************
-  /**
-   * Recupera toda a información relacionada co usuario actual. (GET)
-   *
-   * @param req - obxecto da petición
-   * @param res - obxecto da resposta
-   * @param next
-   */
-  public getMe = async (
-    req   : req,
-    res   : res,
-    next  : next
-  ): Promise<any> => {
-    try {
-      const {
-        orderBy,
-        limit,
-        offset,
-        ...query
-      } = req.query
-
-      const queryParams = new APIFilter(query);
-
-      const responseMe : ResponseMe = {
-        code          : HttpStatus.OK,
-        me            : null,
-        comments      : await this.commentAppService.getAll(queryParams.getQueryString(), limit, offset),
-        projects      : await this.projectService.getAll(queryParams.getQueryString(), limit, offset),
-        repositories  : await this.repositoryAppService.getAll(queryParams.getQueryString(), limit, offset),
-        requirements  : await this.requirementService.getAll(queryParams.getQueryString(), limit, offset),
-        resources     : await this.resourceService.getAll(queryParams.getQueryString(), limit, offset),
-      }
-
-      // responseMe.projects = await service.getAll(queryParams.getQueryString(), limit, offset);
-
-      // let response = await this.service.getAll(queryParams.getQueryString(), orderBy, limit, offset);
-
-      // const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
-
-      res.status(responseMe.code).json(responseMe);
-    } catch (error) {
-      next(error);
-    }
-  }
-
   /**
    * Recupera tódolos proxectos. (GET)
    *
@@ -170,7 +143,7 @@ export class CurrentUserController  {
     } catch (error) {
       next(error);
     }
-  }
+  };
 
   /**
    * Recupera un proxecto en concreto. (GET)
@@ -217,6 +190,12 @@ export class CurrentUserController  {
       const { id } = req.params;
 
       let response;
+
+      if (Object.keys(req.body).length !== 0) {
+        const obj: T = req.body;
+
+        response = await this.service.update(id, obj);
+      }
 
       const responseData : ResponseData = this.processResponse(req, response, 'UPDATE');
 
@@ -370,5 +349,45 @@ export class CurrentUserController  {
     }
 
     return responseData;
+  }
+
+  /**
+   * Comproba se o AssignedResource pasado ten os atributos mínimos que o modelo necesita.
+   *
+   * @param item AssignedResource que se vai a avaliar
+   * @returns Boolean
+   *
+   * @link https://stackoverflow.com/a/59484923 - Probas pero sen usar.
+   * @link https://stackoverflow.com/a/45604667 - Probas pero sen usar.
+   * @link https://stackoverflow.com/a/59292958 - Probas pero sen usar.
+   */
+  protected hasMinimumAttributes(item: T): Boolean {
+    let result = true;
+
+    if (!item) {
+      result = false;
+    } else {
+      for (let prop of this.minimumAttributes) {
+        if (item[prop] == undefined) {
+          result = false;
+          break;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Crea unha nova instancia da clase xenérica.
+   *
+   * @param obj novo obxecto da clase xenérica
+   * @returns Unha instancia concreta de T
+   *
+   * @link https://stackoverflow.com/a/26696476
+   * @link https://newbedev.com/create-a-new-object-from-type-parameter-in-generic-class
+   */
+  getNewEntity(params?) : T {
+      return new this.entity(params);
   }
 }
