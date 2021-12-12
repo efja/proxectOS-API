@@ -5,11 +5,11 @@ import HttpStatus from 'http-status-codes';
 import superagent from 'superagent';
 
 import { DBConnection } from '../../config/config-db';
-import { getStatusCode } from '../../helpers/resquest.helper';
+import { getExternalResource, getStatusCode } from '../../helpers/resquest.helper';
 import { ResponseCommons, ResponseData, ResponseUserCommons, ResultQuery } from '../../interfaces/response-data.interface';
 
 // ##################################################################################################
-// ## CLASE BaseService
+// ## CLASE CommonsModelService
 // ##################################################################################################
 export class CommonsModelService {
   // ************************************************************************************************
@@ -47,10 +47,10 @@ export class CommonsModelService {
   public async getCommons(): Promise<ResponseCommons> {
     const responseCommons: ResponseCommons = {
       code        : null,
-      priorities  : await this.getExternalResource('priorities'),
-      stages      : await this.getExternalResource('stages'),
-      states      : await this.getExternalResource('states'),
-      types       : await this.getExternalResource('types'),
+      priorities  : await getExternalResource(`${this.uri}/priorities`),
+      stages      : await getExternalResource(`${this.uri}/stages`),
+      states      : await getExternalResource(`${this.uri}/states`),
+      types       : await getExternalResource(`${this.uri}/types`),
       userCommons : await this.getUserCommons(),
     };
 
@@ -75,10 +75,10 @@ export class CommonsModelService {
   private async getUserCommons(): Promise<ResponseUserCommons> {
     let responseUserCommons : ResponseUserCommons = {
       code              : null,
-      roles             : await this.getExternalResource('roles'),
-      userContactTypes  : await this.getExternalResource('userContactTypes'),
-      userGroups        : await this.getExternalResource('userGroups'),
-      userSchedules     : await this.getExternalResource('userSchedules'),
+      roles             : await getExternalResource(`${this.uri}/roles`),
+      userContactTypes  : await getExternalResource(`${this.uri}/userContactTypes`),
+      userGroups        : await getExternalResource(`${this.uri}/userGroups`),
+      userSchedules     : await getExternalResource(`${this.uri}/userSchedules`),
     }
 
     responseUserCommons.code = getStatusCode(
@@ -91,38 +91,6 @@ export class CommonsModelService {
     );
 
     return responseUserCommons;
-  }
-
-  /**
-   * Helper para obter un recurso externo.
-   *
-   * @param partiaUri parte final da URI do recurso que se quere consumir
-   * @returns ResponseData
-   */
-  private async getExternalResource(partiaUri): Promise<ResponseData> {
-    let result: ResultQuery = {
-      response  : null,
-    };
-
-    let resultData : ResponseData = {
-      code: null,
-      data: null,
-    }
-
-    let uri = `${this.uri}/${partiaUri}`;
-    let queryResult = null;
-
-    try {
-      queryResult = (await superagent.get(uri));
-
-      resultData.code = queryResult.body.code;
-      resultData.data = queryResult.body.data;
-    } catch (error) {
-      resultData.code = error.status;
-      resultData.data = error.message;
-    }
-
-    return resultData;
   }
 
   // ************************************************************************************************

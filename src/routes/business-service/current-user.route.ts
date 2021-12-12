@@ -33,12 +33,12 @@ export class CurrentUserRoutes {
     this.router.get('/comments/:id', this.currentUserController.getMe);
     this.router.get('/projects', this.currentUserController.getMe);
     this.router.get('/projects/:id', this.currentUserController.getMe);
-    this.router.get('/repositories', this.currentUserController.getMe);
-    this.router.get('/repositories/:id', this.currentUserController.getMe);
-    this.router.get('/requirements', this.currentUserController.getMe);
-    this.router.get('/requirements/:id', this.currentUserController.getMe);
-    this.router.get('/resources', this.currentUserController.getMe);
-    this.router.get('/resources/:id', this.currentUserController.getMe);
+    this.router.get('/projects/:idprj/repositories', this.currentUserController.getMe);
+    this.router.get('/projects/:idprj/repositories/:id', this.currentUserController.getMe);
+    this.router.get('/projects/:idprj/requirements', this.currentUserController.getMe);
+    this.router.get('/projects/:idprj/requirements/:id', this.currentUserController.getMe);
+    this.router.get('/projects/:idprj/resources', this.currentUserController.getMe);
+    this.router.get('/projects/:idprj/resources/:id', this.currentUserController.getMe);
 
     // Usuario
     this.router.get('/contacts', this.currentUserController.getMe);

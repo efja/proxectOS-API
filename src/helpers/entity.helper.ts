@@ -44,4 +44,3 @@ export function getUserGroups(groupsIds, allGrupos: UserGroup[]): UserGroup[] {
 
     return result;
 }
-
