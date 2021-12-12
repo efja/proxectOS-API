@@ -26,21 +26,21 @@ export class SummaryRoutes {
   // ************************************************************************************************
   private routes = () => {
     // POST
-    this.router.post('', this.summaryController.create);
-    this.router.post('/Multiple', this.summaryController.createList);
+    // this.router.post('', this.summaryController.create);
+    // this.router.post('/Multiple', this.summaryController.createList);
 
-    // GET
-    this.router.get('', this.summaryController.getAll);
-    this.router.get('/:id', this.summaryController.get);
+    // // GET
+    // this.router.get('', this.summaryController.getAll);
+    // this.router.get('/:id', this.summaryController.get);
 
-    // PUT
-    this.router.put('/:id', this.summaryController.update);
+    // // PUT
+    // this.router.put('/:id', this.summaryController.update);
 
-    // PATCH
-    this.router.patch('/:id', this.summaryController.modify);
+    // // PATCH
+    // this.router.patch('/:id', this.summaryController.modify);
 
-    // DELETE
-    this.router.delete('/:id', this.summaryController.delete);
+    // // DELETE
+    // this.router.delete('/:id', this.summaryController.delete);
   };
 
   // ************************************************************************************************

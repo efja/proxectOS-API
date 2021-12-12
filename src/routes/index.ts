@@ -28,17 +28,23 @@ const router = Router();
     res.json(req.t('WELCOME', { app: api_name, version: api_version }));
   });
 
+  // ************************************************************************************************
+  // ** FUNCIONALIDADES
+  // ************************************************************************************************
   // Información personal
   router.use('/me', new CurrentUserRoutes().getRoutes());
 
   // Admin
   router.use('/admin', new AdminRoutes().getRoutes());
 
-  // Proxectos
-  router.use('/projects', new ProjectRoutes().getRoutes());
-
   // Resumos
   router.use('/summaries', new SummaryRoutes().getRoutes());
+
+  // ************************************************************************************************
+  // ** MODELOS
+  // ************************************************************************************************
+  // Proxectos
+  router.use('/projects', new ProjectRoutes().getRoutes());
 
   return router;
 };

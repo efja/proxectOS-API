@@ -25,22 +25,22 @@ export class AdminRoutes {
   // ** RUTAS
   // ************************************************************************************************
   private routes = () => {
-    // POST
-    this.router.post('', this.adminController.create);
-    this.router.post('/Multiple', this.adminController.createList);
+    // // POST
+    // this.router.post('', this.adminController.create);
+    // this.router.post('/Multiple', this.adminController.createList);
 
-    // GET
-    this.router.get('', this.adminController.getAll);
-    this.router.get('/:id', this.adminController.get);
+    // // GET
+    // this.router.get('', this.adminController.getAll);
+    // this.router.get('/:id', this.adminController.get);
 
-    // PUT
-    this.router.put('/:id', this.adminController.update);
+    // // PUT
+    // this.router.put('/:id', this.adminController.update);
 
-    // PATCH
-    this.router.patch('/:id', this.adminController.modify);
+    // // PATCH
+    // this.router.patch('/:id', this.adminController.modify);
 
-    // DELETE
-    this.router.delete('/:id', this.adminController.delete);
+    // // DELETE
+    // this.router.delete('/:id', this.adminController.delete);
   };
 
   // ************************************************************************************************

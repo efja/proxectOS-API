@@ -5,6 +5,7 @@
 import HttpStatus from 'http-status-codes';
 import { Operation } from 'fast-json-patch';
 import { req, res, next } from 'express';
+import cleanDeep from 'clean-deep';
 
 import { ResponseData, ResponseMe } from '../../interfaces/response-data.interface';
 import { APIFilter } from '../../helpers/uri-filter.helper';
@@ -15,34 +16,40 @@ import { RepositoryAppService } from '../../services/models/repositoryapp.servic
 import { RequirementService } from '../../services/models/requirement.service';
 import { ResourceService } from '../../services/models/resource.service';
 import { UserService } from '../../services/models/user.service';
+import { BaseController } from '../base.controller';
+import { AssignedUserService } from '../../services/models/assigned-user.service';
+import { AssignedUserCollections } from '../../interfaces/assigned-user-collections.interface';
 
 // ##################################################################################################
 // ## CONSTANTES
 // ##################################################################################################
-const TRANSLATION_NAME_MODEL : string = 'CURRENT_USER';
+const TRANSLATION_NAME_MODEL: string = 'CURRENT_USER';
 
 // ####################################################################################################
 // ## CLASE CurrentUserController
 // ####################################################################################################
-export class CurrentUserController  {
+export class CurrentUserController extends BaseController {
   // ************************************************************************************************
   // ** ATRIBUTOS
   // ************************************************************************************************
-  protected TRANSLATION_NAME_MODEL : string = TRANSLATION_NAME_MODEL;
-  protected serviceName             : any;
-  protected service                 : any;
+  protected TRANSLATION_NAME_MODEL: string = TRANSLATION_NAME_MODEL;
+  protected serviceName: any;
+  protected service: any;
 
   // ************************************************************************************************
   // ** CONSTRUTOR
   // ************************************************************************************************
   constructor(
+    private assignedUserService = new AssignedUserService,
     private commentAppService = new CommentAppService,
     private projectService = new ProjectService,
     private repositoryAppService = new RepositoryAppService,
     private requirementService = new RequirementService,
     private resourceService = new ResourceService,
     private userService = new UserService,
-  ) { }
+  ) {
+    super();
+  }
 
   // ************************************************************************************************
   // ** MÉTODOS CRUD (CREACIÓN)
@@ -55,14 +62,14 @@ export class CurrentUserController  {
    * @param next
    */
   public create = async (
-    req   : req,
-    res   : res,
-    next  : next
+    req: req,
+    res: res,
+    next: next
   ): Promise<any> => {
     try {
       let response;
 
-      const responseData : ResponseData = this.processResponse(req, response, 'CREATE');
+      const responseData: ResponseData = this.processResponse(req, response, 'CREATE');
 
       res.status(responseData.code).json(responseData);
     } catch (error) {
@@ -78,14 +85,14 @@ export class CurrentUserController  {
    * @param next
    */
   public createList = async (
-    req   : req,
-    res   : res,
-    next  : next
+    req: req,
+    res: res,
+    next: next
   ): Promise<any> => {
     try {
       let response;
 
-      const responseData : ResponseData = this.processResponse(req, response, 'CREATE_LIST');
+      const responseData: ResponseData = this.processResponse(req, response, 'CREATE_LIST');
 
       res.status(responseData.code).json(responseData);
     } catch (error) {
@@ -104,9 +111,9 @@ export class CurrentUserController  {
    * @param next
    */
   public getMe = async (
-    req   : req,
-    res   : res,
-    next  : next
+    req: req,
+    res: res,
+    next: next
   ): Promise<any> => {
     try {
       const {
@@ -116,25 +123,59 @@ export class CurrentUserController  {
         ...query
       } = req.query
 
+      const fakeUserId = "616b4dbb9f7ee9e407c28a1b"; // TODO: quitar cando se implemente o login
+      let id = fakeUserId; // TODO: quitar cando se implemente o login
+
       const queryParams = new APIFilter(query);
 
-      const responseMe : ResponseMe = {
-        code          : HttpStatus.OK,
-        me            : null,
-        comments      : await this.commentAppService.getAll(queryParams.getQueryString(), limit, offset),
-        projects      : await this.projectService.getAll(queryParams.getQueryString(), limit, offset),
-        repositories  : await this.repositoryAppService.getAll(queryParams.getQueryString(), limit, offset),
-        requirements  : await this.requirementService.getAll(queryParams.getQueryString(), limit, offset),
-        resources     : await this.resourceService.getAll(queryParams.getQueryString(), limit, offset),
+      const queryAsisgnedUsers = new APIFilter();
+      queryAsisgnedUsers.copy(queryParams, ["includes"]);
+      queryAsisgnedUsers.objectIdFilters = [
+        { assignedUser: id },
+      ];
+
+      if (id && id != "") {
+        const responseMe: ResponseMe = {
+          code: HttpStatus.OK,
+          _me: await this.userService.get(id, queryParams.getQueryString()),
+          asisgnedUsers: await this.assignedUserService.getAll(queryAsisgnedUsers.getQueryString()),
+          comments: null,
+          projects: null,
+          commons: null,
+        }
+
+        let assignedUserCollections: AssignedUserCollections = this.getItemsAsisgnedUsers(responseMe.asisgnedUsers.data);
+
+        const queryComments = new APIFilter();
+        queryComments.copy(queryParams, ["includes"]);
+        queryComments.arrayFilters = [
+          { visibleToUserGroups: assignedUserCollections.assignedUserGroups },
+          { special: [{ createdBy: id }] },
+        ];
+
+        const queryProjects = new APIFilter();
+        queryProjects.copy(queryParams, ["includes"]);
+        queryProjects.arrayFilters = [
+          { assignedUsers: assignedUserCollections.assignedUsers },
+          { special: [{ productOwner: id }] },
+        ];
+
+        responseMe.comments = await this.commentAppService.getAll(queryComments.getQueryString(), limit, offset);
+        responseMe.projects = await this.projectService.getAll(queryProjects.getQueryString(), limit, offset);
+
+        // const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
+
+        res.status(responseMe.code).json(responseMe);
+      } else {
+        const response: ResponseData = {
+          code: HttpStatus.BAD_REQUEST,
+          data: null,
+        }
+
+        const responseData: ResponseData = this.processResponse(req, response, 'BAD_REQUEST');
+        res.status(responseData.code).json(responseData);
       }
 
-      // responseMe.projects = await service.getAll(queryParams.getQueryString(), limit, offset);
-
-      // let response = await this.service.getAll(queryParams.getQueryString(), orderBy, limit, offset);
-
-      // const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
-
-      res.status(responseMe.code).json(responseMe);
     } catch (error) {
       next(error);
     }
@@ -148,9 +189,9 @@ export class CurrentUserController  {
    * @param next
    */
   public getAll = async (
-    req   : req,
-    res   : res,
-    next  : next
+    req: req,
+    res: res,
+    next: next
   ): Promise<any> => {
     try {
       const {
@@ -164,7 +205,7 @@ export class CurrentUserController  {
 
       let response = await this.service.getAll(queryParams.getQueryString(), orderBy, limit, offset);
 
-      const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
+      const responseData: ResponseData = this.processResponse(req, response, 'GET_LIST');
 
       res.status(responseData.code).json(responseData);
     } catch (error) {
@@ -180,9 +221,9 @@ export class CurrentUserController  {
    * @param next
    */
   public get = async (
-    req   : req,
-    res   : res,
-    next  : next
+    req: req,
+    res: res,
+    next: next
   ): Promise<any> => {
     try {
       const { id } = req.params;
@@ -190,7 +231,7 @@ export class CurrentUserController  {
 
       let response = await this.service.get(id, queryParams.getQueryString());
 
-      const responseData : ResponseData = this.processResponse(req, response, 'GET');
+      const responseData: ResponseData = this.processResponse(req, response, 'GET');
 
       res.status(responseData.code).json(responseData);
     } catch (error) {
@@ -209,16 +250,16 @@ export class CurrentUserController  {
    * @param next
    */
   public update = async (
-    req   : req,
-    res   : res,
-    next  : next
+    req: req,
+    res: res,
+    next: next
   ): Promise<any> => {
     try {
       const { id } = req.params;
 
       let response;
 
-      const responseData : ResponseData = this.processResponse(req, response, 'UPDATE');
+      const responseData: ResponseData = this.processResponse(req, response, 'UPDATE');
 
       res.status(responseData.code).json(responseData);
     } catch (error) {
@@ -233,10 +274,10 @@ export class CurrentUserController  {
    * @param res - obxecto da resposta
    * @param next
    */
-   public modify = async (
-    req   : req,
-    res   : res,
-    next  : next
+  public modify = async (
+    req: req,
+    res: res,
+    next: next
   ): Promise<any> => {
     try {
       const { id } = req.params;
@@ -254,7 +295,7 @@ export class CurrentUserController  {
         response = await this.service.modify(id, objPatch);
       }
 
-      const responseData : ResponseData = this.processResponse(req, response, 'UPDATE');
+      const responseData: ResponseData = this.processResponse(req, response, 'UPDATE');
 
       res.status(responseData.code).json(responseData);
     } catch (error) {
@@ -273,16 +314,16 @@ export class CurrentUserController  {
    * @param next
    */
   public delete = async (
-    req   : req,
-    res   : res,
-    next  : next
+    req: req,
+    res: res,
+    next: next
   ): Promise<any> => {
     try {
       const { id } = req.params;
 
       let response = await this.service.delete(id);
 
-      const responseData : ResponseData = this.processResponse(req, response, 'DELETE');
+      const responseData: ResponseData = this.processResponse(req, response, 'DELETE');
 
       res.status(responseData.code).json(responseData);
     } catch (error) {
@@ -290,85 +331,30 @@ export class CurrentUserController  {
     }
   };
 
-  // ************************************************************************************************
-  // ** UTILIDADES
-  // ************************************************************************************************
-  /**
-   * Procesa a resposta HTTP da conexión coa BD.
-   *
-   * @param req request do método HTTP
-   * @param response resposta do método HTTP
-   * @param method metótodo para o cal procesar a resposta
-   * @returns ResponseData
-   */
-  protected processResponse(req, response: ResponseData, method: string): ResponseData {
-    method = method.toUpperCase();
-
-    let isPlural = method.includes('LIST');
-    let isError  = false;
-    let plural = (isPlural)
-      ? '_PLURAL'
-      : '';
-    let id = (response && response.data && response.data.id)
-      ? response.data.id
-      : undefined;
-
-    if (
-      !response ||
-      (
-        response.code != HttpStatus.OK &&
-        response.code != HttpStatus.CREATED
-      )
-    ) {
-      isError = true;
-    }
-
-    let code = (response && response.code)
-      ? response.code
-      : HttpStatus.CONFLICT;
-    let data = (response)
-      ? response.data
-      : undefined;
-    let message = (!isError && response)
-      ? response.message
-      : undefined;
-    let error = (isError && response)
-      ? response.error
-      : `ERROR.${method}`;
-
-    if (message) {
-      message = req.t(message, { entity: req.t(`${this.TRANSLATION_NAME_MODEL}.NAME${plural}`), id: id });
-    }
-
-    if (error) {
-      error = req.t(error, { entity: req.t(`${this.TRANSLATION_NAME_MODEL}.NAME${plural}`), id: id });
-    }
-
-    const responseData: ResponseData = {
-      code,
-      data    : (!isError)
-        ? data
-        : undefined,
-      message : (!isError)
-        ? message
-        : undefined,
-      error   : (isError)
-        ? error
-        : undefined,
+  //
+  private getItemsAsisgnedUsers(data): AssignedUserCollections {
+    let result: AssignedUserCollections = {
+      assignedRoles: [],
+      assignedUsers: data.map((obj) => obj.id),
+      assignedUserGroups: [],
     };
 
-    if (isPlural) {
-      responseData.total = (response)
-        ? response.total
-        : 0;
-      responseData.from = (response)
-        ? response.from
-        : 0;
-      responseData.limit = (response)
-        ? response.limit
-        : 0;
-    }
+    // Buscanse os valores
+    let assignedRoles = data.map((obj) => obj.assignedRoles)
+    let assignedUserGroups = data.map((obj) => obj.assignedUserGroups);
 
-    return responseData;
+    // Limplianse os valores nulos, en caso de habelos
+    assignedRoles = cleanDeep(assignedRoles);
+    assignedUserGroups = cleanDeep(assignedUserGroups);
+
+    // Agrupanse tódolos arrays nun só (o que se vai a devolver)
+    assignedRoles.forEach(element => {
+      result.assignedRoles.push(...element)
+    });
+    assignedUserGroups.forEach(element => {
+      result.assignedUserGroups.push(...element)
+    });
+
+    return result;
   }
 }

@@ -40,6 +40,9 @@
 		"NAME": "Comentario",
 		"NAME_PLURAL": "Comentarios"
 	},
+	"CURRENT_USER": {
+		"NAME": "Usuario actual"
+	},
 	"PRIORITY": {
 		"NAME": "Prioridad",
 		"NAME_PLURAL": "Prioridades"

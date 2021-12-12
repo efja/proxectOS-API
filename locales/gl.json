@@ -14,7 +14,7 @@
 	"ERROR": {
 		"ALREADY_EXIST": "A entidade {{entity}} coa ID {{id}} xa existe",
 		"ALREADY_EXIST_LIST": "Algunha das entidades {{entity}} (ou todas) xa esiten",
-		"BAD_REQUEST": "Petición errónea para a entidade{{entity}}",
+		"BAD_REQUEST": "Petición errónea para {{entity}}",
 		"CONFLICT": "Producíuse un conflito coa operación da entidade {{entity}} coa ID {{id}}",
 		"CREATE": "Non se puido crear a entidade {{entity}}",
 		"CREATE_LIST": "Non se puideron crear as entidades {{entity}}",
@@ -39,6 +39,9 @@
 	"COMMENT": {
 		"NAME": "Comentario",
 		"NAME_PLURAL": "Comentarios"
+	},
+	"CURRENT_USER": {
+		"NAME": "Usuario actual"
 	},
 	"PRIORITY": {
 		"NAME": "Prioridade",

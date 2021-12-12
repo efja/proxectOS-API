@@ -1,5 +1,8 @@
 import { User } from "../models/user.model";
 
+// ****************************************************************************************************
+// ** XENÉRICAS
+// ****************************************************************************************************
 export interface ResponseData {
     code        : number,
     data        : any,
@@ -10,32 +13,45 @@ export interface ResponseData {
     error?      : string,
 }
 
+export interface ResultQuery {
+  id?       : string,
+  response  : any,
+  from?     : number,
+  limit?    : number,
+}
+
+// ****************************************************************************************************
+// ** USUARIOS
+// ****************************************************************************************************
 export interface ResponseMe {
   code          : number,
-  me            : User,
+  _me           : ResponseData,
+  asisgnedUsers : ResponseData,
   comments      : ResponseData,
   projects      : ResponseData,
-  repositories  : ResponseData,
-  requirements  : ResponseData,
-  resources     : ResponseData,
+  repositories? : ResponseData,
+  requirements? : ResponseData,
+  resources?    : ResponseData,
+  commons       : ResponseCommons,
 }
 
-export interface ResultQuery {
-  code    : number,
-  data    : any,
-  from?   : number,
-  limit?  : number,
+// COMÚN
+export interface ResponseUserCommons {
+  code              : number,
+  role              : ResponseData,
+  userContactType?  : ResponseData,
+  userGroup         : ResponseData,
+  userSchedule?     : ResponseData,
 }
 
-export interface ResultCheckType {
-  getObjectType   : any,
-  isArray         : boolean,
-  isBoolean       : boolean,
-  isDate          : boolean,
-  isNull          : boolean,
-  isNumber        : boolean,
-  isObject        : boolean,
-  isObjectID      : boolean,
-  isString        : boolean,
-  isUndefined     : boolean,
+// ****************************************************************************************************
+// ** COMÚNS
+// ****************************************************************************************************
+export interface ResponseCommons {
+  code          : number,
+  priority      : ResponseData,
+  stage         : ResponseData,
+  state         : ResponseData,
+  typeapp       : ResponseData,
+  userCommons?  : ResponseUserCommons,
 }

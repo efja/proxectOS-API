@@ -14,12 +14,12 @@ import {
     JSONArray,
 } from "types-json";
 
-import { ResultCheckType } from '../interfaces/response-data.interface';
+import { ResultCheckType } from '../interfaces/checks-helper.interface';
 import { getClassName } from './entity.helper';
 
 export function checkType(obj) : ResultCheckType {
     let result : ResultCheckType = {
-        getObjectType   : (obj) ? getClassName(obj) : false,
+        getObjectType   : "",
         isArray         : (obj) ? isJSONArray(obj) : false,
         isBoolean       : (obj) ? isBoolean(obj) : false,
         isDate          : (obj) ? moment(new Date(obj.toString())).isValid() : false,
@@ -41,6 +41,18 @@ export function checkType(obj) : ResultCheckType {
         try {
             if (!result.isObjectID && (result.isString)) {
                 result.isObjectID = (String)(new Types.ObjectId(obj)) === obj;
+            }
+        } catch { }
+
+        try {
+            if (
+                !result.isArray ||
+                !result.isBoolean ||
+                !result.isDate ||
+                !result.isNumber ||
+                !result.isString
+            ) {
+                result.getObjectType =  getClassName(obj);
             }
         } catch { }
     }

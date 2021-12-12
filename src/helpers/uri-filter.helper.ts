@@ -2,9 +2,9 @@
 // ## IMPORTACIÓNS
 // ##################################################################################################
 import qs from 'qs';
-import moment from 'moment';
-import { Types } from 'mongoose';
-import { checkType } from './check-typeshelper';
+import clone from 'rfdc/default';
+import { checkType } from './check-types.helper';
+
 
 // ##################################################################################################
 // ## CLASE AssignedResource
@@ -13,14 +13,16 @@ export class APIFilter {
     // ************************************************************************************************
     // ** ATRIBUTOS
     // ************************************************************************************************
-    public booleanFilters   : any[] = [];
-    public dateFilters      : any[] = [];
-    public numberFilters    : any[] = [];
-    public objectIdFilters  : any[] = [];
-    public orderByFilters   : any[] = [];
-    public stringFilters    : any[] = [];
+    public arrayFilters: any[] = [];
+    public booleanFilters: any[] = [];
+    public dateFilters: any[] = [];
+    public numberFilters: any[] = [];
+    public objectIdFilters: any[] = [];
+    public orderByFilters: any[] = [];
+    public stringFilters: any[] = [];
 
-    public stringSensitive  : boolean = false;
+    public includes: boolean = false;
+    public logicalOperator: string = "";
 
     // Relacións
 
@@ -45,85 +47,116 @@ export class APIFilter {
 
             if (paramKey.toLowerCase() === 'sort' || paramKey.toLowerCase() === 'orderby') {
                 this.orderByFilters = paramValue.split(',');
+            } else if (paramKey.toLowerCase() === 'includes') {
+                this.includes = Boolean(paramValue);
+            } else if (
+                paramKey.toLowerCase() === 'logical' ||
+                paramKey.toLowerCase() === 'operator' ||
+                paramKey.toLowerCase() === 'op'
+            ) {
+                // só pode mandarse un operador lóxico.
+                // Se se manda máis de un sobreescribese co valor do último
+                this.logicalOperator = paramValue;
             } else {
                 let checksTypes = checkType(paramValue);
 
                 if (checksTypes.isBoolean) {
                     this.booleanFilters.push(
-                        { [paramKey] : Boolean(paramValue) }
+                        { [paramKey]: Boolean(paramValue) }
                     );
                 } else if (checksTypes.isNumber) {
                     this.numberFilters.push(
-                        { [paramKey] : Number(paramValue) }
+                        { [paramKey]: Number(paramValue) }
                     );
                 } else if (checksTypes.isDate) {
-                    let date = moment(paramValue, true); // Modo estricto
-
                     this.dateFilters.push(
-                        // Para buscar dentro do mesmo día poñemos un rango de búsqueda entre a primeira hora e a última do mesmo
-                        { [paramKey] : { '$gte' : date.startOf('day').toISOString(), '$lt': date.endOf('day').toISOString() } }
+                        { [paramKey]: paramValue }
                     );
                 } else if (checksTypes.isObjectID) {
                     this.objectIdFilters.push(
-                        { [paramKey] : new Types.ObjectId(paramValue) }
+                        { [paramKey]: paramValue }
+                    );
+                } else if (checksTypes.isArray) {
+                    this.arrayFilters.push(
+                        { [paramKey]: paramValue }
                     );
                 } else {
-                    this.stringFilters.push(this.getStringFilter(paramKey, paramValue));
+                    this.stringFilters.push(
+                        { [paramKey]: paramValue }
+                    );
                 }
             }
         }
     }
 
-    private getStringFilter(key: string, filter: string, stringSensitive: boolean = this.stringSensitive): Object {
-        let options : string = "g";
+    /**
+     * Devolve un obxecto coas distintas coleccións de parámetros de búsqueda.
+     *
+     * @returns Object
+     */
+    public getQueryObj(): Object {
+        let result: Object = {};
 
-        if (!stringSensitive) {
-            options += "i";
-        }
-
-        return { [key] : { '$re': new RegExp(filter, options) } }
-    }
-
-    private getObjectKeyValue(list: any[], result : Object) {
-        for (let i = 0; i < list.length; i++) {
-            let item = list[0];
-            result[Object.keys(item)[0]] = Object.values(item)[0];
-        }
-    }
-
-    public getQueryObj() {
-        let result : Object = {};
+        result['includes'] = this.includes;
 
         if (this.orderByFilters.length > 0) {
             result['orderBy'] = this.orderByFilters;
         }
 
+        this.getObjectKeyValue(this.arrayFilters, result);
         this.getObjectKeyValue(this.booleanFilters, result);
-        this.getObjectKeyValue(this.numberFilters, result);
         this.getObjectKeyValue(this.dateFilters, result);
-        this.getObjectKeyValue(this.stringFilters, result);
+        this.getObjectKeyValue(this.numberFilters, result);
         this.getObjectKeyValue(this.objectIdFilters, result);
+        this.getObjectKeyValue(this.stringFilters, result);
 
         return result;
     }
 
-    public getQueryString() {
-        let result : Object = {};
-
-        if (this.orderByFilters.length > 0) {
-            result['orderBy'] = this.orderByFilters;
-        }
-
-        this.getObjectKeyValue(this.booleanFilters, result);
-        this.getObjectKeyValue(this.numberFilters, result);
-        this.getObjectKeyValue(this.dateFilters, result);
-        this.getObjectKeyValue(this.stringFilters, result);
+    /**
+     * Prepara un string cos parámetros dunha query por url a partir dos distintos tipo sde coleccións.
+     *
+     * @returns string
+     */
+    public getQueryString(): string {
+        let result: Object = this.getQueryObj();
 
         const queryParameters = qs.stringify(
             result,
-            { arrayFormat: 'repeat' }
+            { arrayFormat: 'brackets' }
         );
 
         return queryParameters;
+    }
+
+    // **********************************************************************************************
+    // ** UTILIDADES
+    // **********************************************************************************************
+    /**
+     * Incorpora os atributos dun obxecto como elementos individuais dun array nominativo.
+     *
+     * @param obj obxecto a tratar
+     * @param result array nominativo no que introducir os cambios
+     */
+    private getObjectKeyValue(obj: any[], result: Object) {
+        for (let i = 0; i < obj.length; i++) {
+            let property = obj[i];
+
+            // Como indice do array empregase a key da propiedade e como valor todo o seu contido
+            // o indice 0 é necesario porque Object.keys e Object.values devolve un array e neste caso de só un elemento
+            result[Object.keys(property)[0]] = Object.values(property)[0];
+        }
+    }
+
+    /**
+     * Copia as propiedades do obxecto pasado como parámetro no obxecto actual.
+     *
+     * @param original un obxecto APIFilter
+     * @param properties lista de propiedades a copiar
+     */
+    public copy(original: APIFilter, properties: string[] = Object.keys(this)) {
+        for (let property of properties) {
+            this[property] = clone(original[property]);
+        }
     }
 }

@@ -125,7 +125,7 @@ export abstract class BaseModelService<T> {
     return this.processResponse(result, 'GET_LIST');
   }
 
-  public async get(id: string): Promise<ResponseData> {
+  public async get(id: string, filters?  : string): Promise<ResponseData> {
     let result: ResultQuery = {
       id        : id,
       response  : null,
@@ -133,6 +133,10 @@ export abstract class BaseModelService<T> {
 
     let uri = `${this.uri}/${id}`;
     let queryResult = null;
+
+    if (filters) {
+      uri += `?${filters}`;
+    }
 
     try {
       queryResult = await superagent.get(uri);

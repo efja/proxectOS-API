@@ -7,7 +7,6 @@ import { CommentApp } from './commentapp.model';
 import { User } from './user.model';
 import { Resource } from './resource.model';
 
-
 // ####################################################################################################
 // ## CLASE AssignedResource
 // ####################################################################################################

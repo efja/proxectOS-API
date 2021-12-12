@@ -41,6 +41,7 @@ export class CurrentUserRoutes {
     // ----------------------------------------------------------------------------------------------
     // -- GET
     // ----------------------------------------------------------------------------------------------
+    this.router.get('', this.currentUserController.getMe);
     this.router.get('/comments', this.currentUserController.getAll);
     this.router.get('/comments/:id', this.currentUserController.get);
     this.router.get('/projects', this.currentUserController.getAll);
