@@ -29,22 +29,20 @@ export class CurrentUserRoutes {
     // -- GET
     // ----------------------------------------------------------------------------------------------
     this.router.get('', this.currentUserController.getMe);
-    this.router.get('/comments', this.currentUserController.getMe);
-    this.router.get('/comments/:id', this.currentUserController.getMe);
-    this.router.get('/projects', this.currentUserController.getMe);
-    this.router.get('/projects/:id', this.currentUserController.getMe);
-    this.router.get('/projects/:idprj/repositories', this.currentUserController.getMe);
-    this.router.get('/projects/:idprj/repositories/:id', this.currentUserController.getMe);
-    this.router.get('/projects/:idprj/requirements', this.currentUserController.getMe);
-    this.router.get('/projects/:idprj/requirements/:id', this.currentUserController.getMe);
-    this.router.get('/projects/:idprj/resources', this.currentUserController.getMe);
-    this.router.get('/projects/:idprj/resources/:id', this.currentUserController.getMe);
+    this.router.get('/comments', this.currentUserController.getAllComments);
+    this.router.get('/comments/:id', this.currentUserController.getComment);
+    this.router.get('/projects', this.currentUserController.getAllProjects);
+    this.router.get('/projects/:id', this.currentUserController.getProject);
+    this.router.get('/projects/:id/repositories', this.currentUserController.getAllRepositories);
+    this.router.get('/projects/repositories/:id', this.currentUserController.getRepository);
+    this.router.get('/projects/:id/requirements', this.currentUserController.getAllRequirements);
+    this.router.get('/projects/requirements/:id', this.currentUserController.getRequirement);
+    this.router.get('/projects/:id/resources', this.currentUserController.getAllResources);
+    this.router.get('/projects/resources/:id', this.currentUserController.getResource);
 
     // Usuario
-    this.router.get('/contacts', this.currentUserController.getMe);
-    this.router.get('/contacts/:id', this.currentUserController.getMe);
-    this.router.get('/schedules', this.currentUserController.getMe);
-    this.router.get('/schedules/:id', this.currentUserController.getMe);
+    this.router.get('/contacts', this.currentUserController.getAllContacts);
+    this.router.get('/schedule', this.currentUserController.getSchedule);
   };
 
   // ************************************************************************************************

@@ -49,10 +49,28 @@ export function getStatusCode(list: any[]): number {
  * @param offset páxina de resultados
  * @returns ResponseData
  */
-export async function queryGetAll(service: any, arrayFilters: any, queryParams: APIFilter, copyQuery: string[], limit: Number, offset: Number): Promise<ResponseData> {
+export async function queryGetAll(service: any, arrayFilters: any, queryParams: APIFilter, copyQuery: string[], limit: Number = 0, offset: Number = 0): Promise<ResponseData> {
   const queryFilters = new APIFilter();
 
   queryFilters.copy(queryParams, copyQuery);
+  queryFilters.arrayFilters = arrayFilters;
+
+  return await service.getAll(queryFilters.getQueryString(), limit, offset);
+}
+
+/**
+ * Helper para xerar peticións estándar para un getAll a un servicio dos modelos de datos.
+ *
+ * @param service servicio para facer a consulta
+ * @param arrayFilters filtros especiais a incluir
+ * @param queryParams parámetros pasados na URI
+ * @param copyQuery parámetros que se queren copiar da URI
+ * @param limit limite de resultados
+ * @param offset páxina de resultados
+ * @returns ResponseData
+ */
+export async function queryGetAll2(service: any, arrayFilters: any, limit: Number = 0, offset: Number = 0): Promise<ResponseData> {
+  const queryFilters = new APIFilter();
   queryFilters.arrayFilters = arrayFilters;
 
   return await service.getAll(queryFilters.getQueryString(), limit, offset);

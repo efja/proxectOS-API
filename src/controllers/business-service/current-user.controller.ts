@@ -3,26 +3,12 @@
 // ## IMPORTACIÓNS
 // ####################################################################################################
 import HttpStatus from 'http-status-codes';
-import { Operation } from 'fast-json-patch';
 import { req, res, next } from 'express';
-import cleanDeep from 'clean-deep';
 
 import { ResponseData, ResponseMe } from '../../interfaces/response-data.interface';
 import { APIFilter } from '../../helpers/uri-filter.helper';
 
-import { CommentAppService } from '../../services/models/commentapp.service';
-import { ProjectService } from '../../services/models/project.service';
-import { RepositoryAppService } from '../../services/models/repositoryapp.service';
-import { RequirementService } from '../../services/models/requirement.service';
-import { ResourceService } from '../../services/models/resource.service';
-import { UserService } from '../../services/models/user.service';
 import { BaseController } from '../base.controller';
-import { AssignedUserService } from '../../services/models/assigned-user.service';
-import { AssignedUserCollections, ProjectCollections, UserCollections } from '../../interfaces/entity-collections.interface';
-import { CommonsModelService } from '../../services/models/commons-model.service';
-import { getStatusCode } from '../../helpers/resquest.helper';
-import { UserContactService } from '../../services/models/user-contact.service';
-import { getUserGroups } from '../../helpers/entity.helper';
 import { CurrentUserService } from '../../services/business-service/current-user.service';
 
 // ##################################################################################################
@@ -51,6 +37,9 @@ export class CurrentUserController extends BaseController {
   // ************************************************************************************************
   // ** MÉTODOS CRUD (READ)
   // ************************************************************************************************
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - ME
+  // ------------------------------------------------------------------------------------------------
   /**
    * Recupera toda a información relacionada co usuario actual. (GET)
    *
@@ -64,10 +53,10 @@ export class CurrentUserController extends BaseController {
     next: next
   ): Promise<any> => {
     try {
-      let id = this.getUserId();
+      let userId = this.getUserId();
 
-      if (id && id != "") {
-        const responseMe: ResponseMe = await this.service.getMe(id);
+      if (userId && userId != "") {
+        const responseMe: ResponseMe = await this.service.getMe(userId);
 
         // const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST'); // TODO: tratar resposta
 
@@ -85,6 +74,218 @@ export class CurrentUserController extends BaseController {
     } catch (error) {
       next(error);
     }
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - COMMENTS
+  // ------------------------------------------------------------------------------------------------
+  public getAllComments = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+    try {
+      let userId = this.getUserId();
+
+      let response = await this.service.getAllComments(userId);
+
+      const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
+
+      res.status(responseData.code).json(responseData);
+    } catch (error) {
+      next(error);
+    }
+  }
+  public getComment = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+    try {
+      const { id } = req.params;
+      let userId = this.getUserId();
+
+      let response = await this.service.getComment(userId, id);
+
+      const responseData : ResponseData = this.processResponse(req, response, 'GET');
+
+      res.status(responseData.code).json(responseData);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - PROJECTS
+  // ------------------------------------------------------------------------------------------------
+  public getAllProjects = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+    try {
+      let userId = this.getUserId();
+
+      let response = await this.service.getAllProjects(userId);
+
+      const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
+
+      res.status(responseData.code).json(responseData);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public getProject = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+    const { id } = req.params;
+    let userId = this.getUserId();
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - PROJECTS -> REPOSITORIES
+  // ------------------------------------------------------------------------------------------------
+  public getAllRepositories = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+    try {
+      let userId = this.getUserId();
+
+      let response = await this.service.getAllRepositories(userId);
+
+      const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
+
+      res.status(responseData.code).json(responseData);
+    } catch (error) {
+      next(error);
+    }
+  }
+  public getRepository = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+    const { id } = req.params;
+    let userId = this.getUserId();
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - PROJECTS -> REQUIREMENTS
+  // ------------------------------------------------------------------------------------------------
+  public getAllRequirements = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+    try {
+      let userId = this.getUserId();
+
+      let response = await this.service.getAllRequirements(userId);
+
+      const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
+
+      res.status(responseData.code).json(responseData);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public getRequirement = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - PROJECTS -> RESOURCES
+  // ------------------------------------------------------------------------------------------------
+  public getAllResources = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+    try {
+      let userId = this.getUserId();
+
+      let response = await this.service.getAllResources(userId);
+
+      const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
+
+      res.status(responseData.code).json(responseData);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public getResource = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+    const { id } = req.params;
+    let userId = this.getUserId();
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - USER -> CONTACTS
+  // ------------------------------------------------------------------------------------------------
+  public getAllContacts = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+    try {
+      let userId = this.getUserId();
+
+      let response = await this.service.getAllContacts(userId);
+
+      const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
+
+      res.status(responseData.code).json(responseData);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public getContact = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - USER -> SCHEDULES
+  // ------------------------------------------------------------------------------------------------
+  public getAllSchedules = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
+    try {
+      let userId = this.getUserId();
+
+      let response = await this.service.getSchedule(userId);
+
+      const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
+
+      res.status(responseData.code).json(responseData);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public getSchedule = async (
+    req: req,
+    res: res,
+    next: next
+  ): Promise<any> => {
   }
 
   // ************************************************************************************************

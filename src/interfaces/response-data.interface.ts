@@ -26,14 +26,14 @@ export interface ResultQuery {
 export interface ResponseMe {
   code            : number,
   _me             : ResponseData,
-  asisgnedUsers?  : ResponseData,
+  asisgnedUsers   : ResponseData,
   comments?       : ResponseData,
   commons?        : ResponseCommons,
   contacts?       : ResponseData,
+  defaultGroups?  : ResponseData,
   projects?       : ResponseData,
   repositories?   : ResponseData,
   requirements?   : ResponseData,
-  defaultGroups?  : ResponseData,
 }
 
 // COMÚN

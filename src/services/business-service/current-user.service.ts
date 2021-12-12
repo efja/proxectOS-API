@@ -7,10 +7,11 @@ import superagent from 'superagent';
 
 import { DBConnection } from '../../config/config-db';
 import { getUserGroups } from '../../helpers/entity.helper';
-import { getStatusCode, queryGetAll } from '../../helpers/resquest.helper';
+import { getStatusCode, queryGetAll, queryGetAll2 } from '../../helpers/resquest.helper';
 import { APIFilter } from '../../helpers/uri-filter.helper';
 import { AssignedUserCollections, ProjectCollections } from '../../interfaces/entity-collections.interface';
 import { ResponseCommons, ResponseData, ResponseMe, ResponseUserCommons, ResultQuery } from '../../interfaces/response-data.interface';
+import { User } from '../../models/user.model';
 import { AssignedUserService } from '../models/assigned-user.service';
 import { CommentAppService } from '../models/commentapp.service';
 import { CommonsModelService } from '../models/commons-model.service';
@@ -63,33 +64,20 @@ export class CurrentUserService {
   // ** MÉTODOS CRUD (READ)
   // ************************************************************************************************
   // ------------------------------------------------------------------------------------------------
-  // -- GET
+  // -- GET - ME
   // ------------------------------------------------------------------------------------------------
-  public async getMe(id): Promise<ResponseMe> {
+  public async getMe(id: string): Promise<ResponseMe> {
     const queryParams = new APIFilter();
     queryParams.includes = true;
 
-    const queryAsisgnedUsers = new APIFilter();
-    queryAsisgnedUsers.objectIdFilters = [
-      { assignedUser: id },
-    ];
+    // Básico
+    const responseMe = await this.getMeBasic(id, queryParams);
 
-    let limit = 0;
-    let offset = 0;
-
-    const responseMe: ResponseMe = {
-      code: HttpStatus.OK,
-      _me: await this.userService.get(id, queryParams.getQueryString()),
-      asisgnedUsers: await this.assignedUserService.getAll(queryAsisgnedUsers.getQueryString()),
-      commons: await this.commonsModelService.getCommons(),
-    }
+    // Comúns
+    responseMe.commons = await this.commonsModelService.getCommons();
 
     // Contactos
-    const arrayFiltersUserIncludes = [
-      { id: responseMe._me.data.contacts },
-    ];
-
-    responseMe.contacts = await queryGetAll(this.userContactService, arrayFiltersUserIncludes, queryParams, [], limit, offset);
+    responseMe.contacts = await this.getMeContacts(responseMe._me.data, queryParams);
 
     // Grupos por defecto do usuario
     responseMe.defaultGroups = {
@@ -101,37 +89,23 @@ export class CurrentUserService {
     let assignedUserCollections: AssignedUserCollections = this.getItemsAsisgnedUsers(responseMe.asisgnedUsers.data);
 
     // Comentarios
-    const arrayFiltersComments = [
-      { visibleToUserGroups: assignedUserCollections.assignedUserGroups },
-      { special: [{ createdBy: id }] },
-    ];
-
-    responseMe.comments = await queryGetAll(this.commentAppService, arrayFiltersComments, queryParams, [], limit, offset);
+    responseMe.comments = await this.getMeComments(id, assignedUserCollections.assignedUserGroups, queryParams);
 
     // Proxectos
-    const arrayFiltersProjects = [
-      { assignedUsers: assignedUserCollections.assignedUsers },
-      { special: [{ productOwner: id }] },
-    ];
-
-    responseMe.projects = await queryGetAll(this.projectService, arrayFiltersProjects, queryParams, [], limit, offset);
+    responseMe.projects = await this.getMeProjects(id, assignedUserCollections.assignedUsers, queryParams);
 
     // Procesando información dos proxectos
     let projectCollections: ProjectCollections = this.getItemsProjects(responseMe.projects.data);
 
     // Repositorios
-    const arrayFiltersRepositories = [
-      { special: [{ id: projectCollections.repositories }] },
-    ];
-
-    responseMe.repositories = await queryGetAll(this.repositoryAppService, arrayFiltersRepositories, queryParams, [], limit, offset);
+    responseMe.repositories = await this.getMeRepositories(projectCollections.repositories, queryParams);
 
     // Requerimentos
     const arrayFiltersRequirements = [
       { special: [{ id: projectCollections.requirements }] },
     ];
 
-    responseMe.requirements = await queryGetAll(this.requirementService, arrayFiltersRequirements, queryParams, [], limit, offset);
+    responseMe.requirements = await queryGetAll(this.requirementService, arrayFiltersRequirements, queryParams, []);
 
     responseMe.code = getStatusCode(
       [
@@ -148,6 +122,214 @@ export class CurrentUserService {
     );
 
     return responseMe;
+  }
+
+  public async getMeBasic(id: string, queryParams: APIFilter): Promise<ResponseMe> {
+    const queryAsisgnedUsers = new APIFilter();
+    queryAsisgnedUsers.objectIdFilters = [
+      { assignedUser: id },
+    ];
+
+    const responseMe: ResponseMe = {
+      code          : HttpStatus.OK,
+      _me           : await this.userService.get(id, queryParams.getQueryString()),
+      asisgnedUsers : await this.assignedUserService.getAll(queryAsisgnedUsers.getQueryString()),
+    }
+
+    responseMe.code = getStatusCode(
+      [
+        responseMe._me,
+        responseMe.asisgnedUsers,
+      ]
+    );
+
+    return responseMe;
+  }
+
+  public async getMeContacts(user: User, queryParams: APIFilter): Promise<ResponseData> {
+    const arrayFiltersUserIncludes = [
+      { id: user.contacts },
+    ];
+
+    return await queryGetAll(this.userContactService, arrayFiltersUserIncludes, queryParams, []);
+  }
+
+  public async getMeComments(userId: string, userGroups: string[], queryParams: APIFilter): Promise<ResponseData> {
+    const arrayFiltersComments = [
+      { visibleToUserGroups: userGroups },
+      { special: [{ createdBy: userId }] },
+    ];
+
+    return await queryGetAll(this.commentAppService, arrayFiltersComments, queryParams, []);
+  }
+
+  public async getMeProjects(userId: string, assignedUsers: string[], queryParams: APIFilter): Promise<ResponseData> {
+    const arrayFiltersProjects = [
+      { assignedUsers: assignedUsers },
+      { special: [{ productOwner: userId }] },
+    ];
+
+    return await queryGetAll(this.projectService, arrayFiltersProjects, queryParams, []);
+  }
+
+  public async getMeRepositories(repositories: string[], queryParams: APIFilter): Promise<ResponseData> {
+    const arrayFiltersRepositories = [
+      { special: [{ id: repositories }] },
+    ];
+
+    return await queryGetAll(this.repositoryAppService, arrayFiltersRepositories, queryParams, []);
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - COMMENTS
+  // ------------------------------------------------------------------------------------------------
+  public async getAllComments(userId: string): Promise<ResponseData> {
+    let result: ResponseData = {
+      code  : HttpStatus.NOT_FOUND,
+      data  : null,
+    };
+
+    const queryParams = new APIFilter();
+    queryParams.includes = true;
+
+    const responseMe = await this.getMeBasic(userId, queryParams);
+
+    // Procesando información das asignacións de usuario
+    let assignedUserCollections: AssignedUserCollections = this.getItemsAsisgnedUsers(responseMe.asisgnedUsers.data);
+
+    // Comentarios
+    result = await this.getMeComments(userId, assignedUserCollections.assignedUserGroups, queryParams);
+
+    return result;
+  }
+
+  public async getComment(userId: string, id: string): Promise<ResponseData> {
+    let result: ResponseData = {
+      code  : HttpStatus.NOT_FOUND,
+      data  : null,
+    };
+
+    try {
+      const allUserComments = await this.getAllComments(userId);
+
+      result.data = allUserComments.data.find(c => c.id == id);
+
+      if (result.data != null) {
+        result.code = HttpStatus.OK;
+      }
+
+    } catch (error) {
+      result = error;
+    }
+
+    return result;
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - PROJECTS
+  // ------------------------------------------------------------------------------------------------
+  public async getAllProjects(userId: string): Promise<ResponseData> {
+    let result: ResponseData = {
+      code  : HttpStatus.NOT_FOUND,
+      data  : null,
+    };
+
+    return result;
+  }
+
+  public async getProject(userId: string, id: string): Promise<ResponseData> {
+    let result: ResponseData = {
+      code  : HttpStatus.NOT_FOUND,
+      data  : null,
+    };
+
+    return result;
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - PROJECTS -> REPOSITORIES
+  // ------------------------------------------------------------------------------------------------
+  public async getAllRepositories(userId: string): Promise<ResponseData> {
+    let result: ResponseData = {
+      code  : HttpStatus.NOT_FOUND,
+      data  : null,
+    };
+
+    return result;
+  }
+
+  public async getRepository(userId: string, id: string): Promise<ResponseData> {
+    let result: ResponseData = {
+      code  : HttpStatus.NOT_FOUND,
+      data  : null,
+    };
+
+    return result;
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - PROJECTS -> REQUIREMENTS
+  // ------------------------------------------------------------------------------------------------
+  public async getAllRequirements(userId: string): Promise<ResponseData> {
+    let result: ResponseData = {
+      code  : HttpStatus.NOT_FOUND,
+      data  : null,
+    };
+
+    return result;
+  }
+
+  public async getRequirement(userId: string, id: string): Promise<ResponseData> {
+    let result: ResponseData = {
+      code  : HttpStatus.NOT_FOUND,
+      data  : null,
+    };
+
+    return result;
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - PROJECTS -> RESOURCES
+  // ------------------------------------------------------------------------------------------------
+  public async getAllResources(userId: string): Promise<ResponseData> {
+    let result: ResponseData = {
+      code  : HttpStatus.NOT_FOUND,
+      data  : null,
+    };
+
+    return result;
+  }
+
+  public async getResource(userId: string, id: string): Promise<ResponseData> {
+    let result: ResponseData = {
+      code  : HttpStatus.NOT_FOUND,
+      data  : null,
+    };
+
+    return result;
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - USER -> CONTACTS
+  // ------------------------------------------------------------------------------------------------
+  public async getAllContacts(userId: string): Promise<ResponseData> {
+    let result: ResponseData = {
+      code  : HttpStatus.NOT_FOUND,
+      data  : null,
+    };
+    return result;
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - USER -> SCHEDULE
+  // ------------------------------------------------------------------------------------------------
+  public async getSchedule(userId: string): Promise<ResponseData> {
+    let result: ResponseData = {
+      code  : HttpStatus.NOT_FOUND,
+      data  : null,
+    };
+
+    return result;
   }
 
   // ************************************************************************************************
