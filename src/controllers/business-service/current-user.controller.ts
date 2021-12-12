@@ -141,8 +141,18 @@ export class CurrentUserController extends BaseController {
     res: res,
     next: next
   ): Promise<any> => {
-    const { id } = req.params;
-    let userId = this.getUserId();
+    try {
+      const { id } = req.params;
+      let userId = this.getUserId();
+
+      let response = await this.service.getProject(userId, id);
+
+      const responseData : ResponseData = this.processResponse(req, response, 'GET');
+
+      res.status(responseData.code).json(responseData);
+    } catch (error) {
+      next(error);
+    }
   }
 
   // ------------------------------------------------------------------------------------------------
@@ -154,9 +164,10 @@ export class CurrentUserController extends BaseController {
     next: next
   ): Promise<any> => {
     try {
+      const { id } = req.params;
       let userId = this.getUserId();
 
-      let response = await this.service.getAllRepositories(userId);
+      let response = await this.service.getAllRepositories(userId, id);
 
       const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
 
@@ -170,8 +181,18 @@ export class CurrentUserController extends BaseController {
     res: res,
     next: next
   ): Promise<any> => {
-    const { id } = req.params;
-    let userId = this.getUserId();
+    try {
+      const { id } = req.params;
+      let userId = this.getUserId();
+
+      let response = await this.service.getRepository(userId, id);
+
+      const responseData : ResponseData = this.processResponse(req, response, 'GET');
+
+      res.status(responseData.code).json(responseData);
+    } catch (error) {
+      next(error);
+    }
   }
 
   // ------------------------------------------------------------------------------------------------
@@ -183,9 +204,10 @@ export class CurrentUserController extends BaseController {
     next: next
   ): Promise<any> => {
     try {
+      const { id } = req.params;
       let userId = this.getUserId();
 
-      let response = await this.service.getAllRequirements(userId);
+      let response = await this.service.getAllRequirements(userId, id);
 
       const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
 
@@ -200,36 +222,18 @@ export class CurrentUserController extends BaseController {
     res: res,
     next: next
   ): Promise<any> => {
-  }
-
-  // ------------------------------------------------------------------------------------------------
-  // -- GET - PROJECTS -> RESOURCES
-  // ------------------------------------------------------------------------------------------------
-  public getAllResources = async (
-    req: req,
-    res: res,
-    next: next
-  ): Promise<any> => {
     try {
+      const { id } = req.params;
       let userId = this.getUserId();
 
-      let response = await this.service.getAllResources(userId);
+      let response = await this.service.getRequirement(userId, id);
 
-      const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
+      const responseData : ResponseData = this.processResponse(req, response, 'GET');
 
       res.status(responseData.code).json(responseData);
     } catch (error) {
       next(error);
     }
-  }
-
-  public getResource = async (
-    req: req,
-    res: res,
-    next: next
-  ): Promise<any> => {
-    const { id } = req.params;
-    let userId = this.getUserId();
   }
 
   // ------------------------------------------------------------------------------------------------
@@ -253,17 +257,10 @@ export class CurrentUserController extends BaseController {
     }
   }
 
-  public getContact = async (
-    req: req,
-    res: res,
-    next: next
-  ): Promise<any> => {
-  }
-
   // ------------------------------------------------------------------------------------------------
   // -- GET - USER -> SCHEDULES
   // ------------------------------------------------------------------------------------------------
-  public getAllSchedules = async (
+  public getSchedule = async (
     req: req,
     res: res,
     next: next
@@ -273,19 +270,12 @@ export class CurrentUserController extends BaseController {
 
       let response = await this.service.getSchedule(userId);
 
-      const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
+      const responseData : ResponseData = this.processResponse(req, response, 'GET');
 
       res.status(responseData.code).json(responseData);
     } catch (error) {
       next(error);
     }
-  }
-
-  public getSchedule = async (
-    req: req,
-    res: res,
-    next: next
-  ): Promise<any> => {
   }
 
   // ************************************************************************************************

@@ -3,21 +3,20 @@
 // ##################################################################################################
 import cleanDeep from 'clean-deep';
 import HttpStatus from 'http-status-codes';
-import superagent from 'superagent';
 
-import { DBConnection } from '../../config/config-db';
-import { getUserGroups } from '../../helpers/entity.helper';
-import { getStatusCode, queryGetAll, queryGetAll2 } from '../../helpers/resquest.helper';
 import { APIFilter } from '../../helpers/uri-filter.helper';
 import { AssignedUserCollections, ProjectCollections } from '../../interfaces/entity-collections.interface';
-import { ResponseCommons, ResponseData, ResponseMe, ResponseUserCommons, ResultQuery } from '../../interfaces/response-data.interface';
-import { User } from '../../models/user.model';
 import { AssignedUserService } from '../models/assigned-user.service';
 import { CommentAppService } from '../models/commentapp.service';
 import { CommonsModelService } from '../models/commons-model.service';
+import { DBConnection } from '../../config/config-db';
+import { getStatusCode, queryGetAll } from '../../helpers/resquest.helper';
+import { getUserGroups } from '../../helpers/entity.helper';
 import { ProjectService } from '../models/project.service';
 import { RepositoryAppService } from '../models/repositoryapp.service';
 import { RequirementService } from '../models/requirement.service';
+import { ResponseData, ResponseMe } from '../../interfaces/response-data.interface';
+import { User } from '../../models/user.model';
 import { UserContactService } from '../models/user-contact.service';
 import { UserService } from '../models/user.service';
 
@@ -101,23 +100,19 @@ export class CurrentUserService {
     responseMe.repositories = await this.getMeRepositories(projectCollections.repositories, queryParams);
 
     // Requerimentos
-    const arrayFiltersRequirements = [
-      { special: [{ id: projectCollections.requirements }] },
-    ];
-
-    responseMe.requirements = await queryGetAll(this.requirementService, arrayFiltersRequirements, queryParams, []);
+    responseMe.requirements = await this.getMeRequirements(projectCollections.requirements, queryParams);
 
     responseMe.code = getStatusCode(
       [
         responseMe._me,
         responseMe.asisgnedUsers,
         responseMe.comments,
+        responseMe.commons,
         responseMe.contacts,
         responseMe.defaultGroups,
         responseMe.projects,
         responseMe.repositories,
         responseMe.requirements,
-        responseMe.commons,
       ]
     );
 
@@ -180,6 +175,14 @@ export class CurrentUserService {
     return await queryGetAll(this.repositoryAppService, arrayFiltersRepositories, queryParams, []);
   }
 
+  public async getMeRequirements(requirements: string[], queryParams: APIFilter): Promise<ResponseData> {
+    const arrayFiltersRequirements = [
+      { special: [{ id: requirements }] },
+    ];
+
+    return await queryGetAll(this.requirementService, arrayFiltersRequirements, queryParams, []);
+  }
+
   // ------------------------------------------------------------------------------------------------
   // -- GET - COMMENTS
   // ------------------------------------------------------------------------------------------------
@@ -190,7 +193,6 @@ export class CurrentUserService {
     };
 
     const queryParams = new APIFilter();
-    queryParams.includes = true;
 
     const responseMe = await this.getMeBasic(userId, queryParams);
 
@@ -209,17 +211,12 @@ export class CurrentUserService {
       data  : null,
     };
 
-    try {
-      const allUserComments = await this.getAllComments(userId);
+    const allUserComments = await this.getAllComments(userId);
 
-      result.data = allUserComments.data.find(c => c.id == id);
+    result.data = allUserComments.data.find(c => c.id == id);
 
-      if (result.data != null) {
-        result.code = HttpStatus.OK;
-      }
-
-    } catch (error) {
-      result = error;
+    if (result.data != null) {
+      result.code = HttpStatus.OK;
     }
 
     return result;
@@ -234,6 +231,16 @@ export class CurrentUserService {
       data  : null,
     };
 
+    const queryParams = new APIFilter();
+
+    const responseMe = await this.getMeBasic(userId, queryParams);
+
+    // Procesando información das asignacións de usuario
+    let assignedUserCollections: AssignedUserCollections = this.getItemsAsisgnedUsers(responseMe.asisgnedUsers.data);
+
+    // Proxectos
+    result = await this.getMeProjects(userId, assignedUserCollections.assignedUsers, queryParams);
+
     return result;
   }
 
@@ -243,17 +250,32 @@ export class CurrentUserService {
       data  : null,
     };
 
+    const allUserProjects = await this.getAllProjects(userId);
+
+    result.data = allUserProjects.data.find(c => c.id == id);
+
+    if (result.data != null) {
+      result.code = HttpStatus.OK;
+    }
+
     return result;
   }
 
   // ------------------------------------------------------------------------------------------------
   // -- GET - PROJECTS -> REPOSITORIES
   // ------------------------------------------------------------------------------------------------
-  public async getAllRepositories(userId: string): Promise<ResponseData> {
+  public async getAllRepositories(userId: string, projectId: string): Promise<ResponseData> {
     let result: ResponseData = {
       code  : HttpStatus.NOT_FOUND,
       data  : null,
     };
+
+    const queryParams = new APIFilter();
+
+    const project = await this.getProject(userId, projectId);
+
+    // Repositorios
+    result = await this.getMeRepositories(project.data.repositories, queryParams);
 
     return result;
   }
@@ -264,17 +286,44 @@ export class CurrentUserService {
       data  : null,
     };
 
+    const queryParams = new APIFilter();
+
+    const allUserProjects = await this.getAllProjects(userId);
+
+    // Procesando información dos proxectos
+    const projectCollections: ProjectCollections = this.getItemsProjects(allUserProjects.data);
+
+    // Repositorios
+    const repositories = await this.getMeRepositories(projectCollections.repositories, queryParams);
+
+    result.data = repositories.data.find(c => c.id == id);
+
+    if (result.data != null) {
+      result.code = HttpStatus.OK;
+    }
+
     return result;
   }
 
   // ------------------------------------------------------------------------------------------------
   // -- GET - PROJECTS -> REQUIREMENTS
   // ------------------------------------------------------------------------------------------------
-  public async getAllRequirements(userId: string): Promise<ResponseData> {
+  public async getAllRequirements(userId: string, projectId: string): Promise<ResponseData> {
     let result: ResponseData = {
       code  : HttpStatus.NOT_FOUND,
       data  : null,
     };
+
+    const queryParams = new APIFilter();
+
+    const project = await this.getProject(userId, projectId);
+
+    // Requerimentos
+    const arrayFiltersRequirements = [
+      { special: [{ id: project.data.requirements }] },
+    ];
+
+    result = await queryGetAll(this.requirementService, arrayFiltersRequirements, queryParams, []);
 
     return result;
   }
@@ -285,26 +334,25 @@ export class CurrentUserService {
       data  : null,
     };
 
-    return result;
-  }
+    const queryParams = new APIFilter();
 
-  // ------------------------------------------------------------------------------------------------
-  // -- GET - PROJECTS -> RESOURCES
-  // ------------------------------------------------------------------------------------------------
-  public async getAllResources(userId: string): Promise<ResponseData> {
-    let result: ResponseData = {
-      code  : HttpStatus.NOT_FOUND,
-      data  : null,
-    };
+    const allUserProjects = await this.getAllProjects(userId);
 
-    return result;
-  }
+    // Procesando información dos proxectos
+    const projectCollections: ProjectCollections = this.getItemsProjects(allUserProjects.data);
 
-  public async getResource(userId: string, id: string): Promise<ResponseData> {
-    let result: ResponseData = {
-      code  : HttpStatus.NOT_FOUND,
-      data  : null,
-    };
+    // Requerimentos
+    const arrayFiltersRequirements = [
+      { special: [{ id: id }] },
+    ];
+
+    const requirements = await queryGetAll(this.requirementService, arrayFiltersRequirements, queryParams, []);
+
+    result.data = requirements.data.find(c => c.id == id);
+
+    if (result.data != null) {
+      result.code = HttpStatus.OK;
+    }
 
     return result;
   }
@@ -317,6 +365,13 @@ export class CurrentUserService {
       code  : HttpStatus.NOT_FOUND,
       data  : null,
     };
+    const queryParams = new APIFilter();
+
+    const user = await this.userService.get(userId, queryParams.getQueryString());
+
+    // Contactos
+    result = await this.getMeContacts(user.data, queryParams);
+
     return result;
   }
 
@@ -328,6 +383,12 @@ export class CurrentUserService {
       code  : HttpStatus.NOT_FOUND,
       data  : null,
     };
+    const queryParams = new APIFilter();
+    queryParams.includes = true;
+
+    const user = await this.userService.get(userId, queryParams.getQueryString());
+    result.code = user.code;
+    result.data = user.data.userSchedule;
 
     return result;
   }

@@ -37,8 +37,6 @@ export class CurrentUserRoutes {
     this.router.get('/projects/repositories/:id', this.currentUserController.getRepository);
     this.router.get('/projects/:id/requirements', this.currentUserController.getAllRequirements);
     this.router.get('/projects/requirements/:id', this.currentUserController.getRequirement);
-    this.router.get('/projects/:id/resources', this.currentUserController.getAllResources);
-    this.router.get('/projects/resources/:id', this.currentUserController.getResource);
 
     // Usuario
     this.router.get('/contacts', this.currentUserController.getAllContacts);
