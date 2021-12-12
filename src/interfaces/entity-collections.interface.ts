@@ -5,6 +5,7 @@ import { AssignedUser } from '../models/assigned-user.model';
 import { Requirement } from '../models/requirement.model';
 import { RepositoryApp } from '../models/repositoryapp.model';
 import { CommentApp } from '../models/commentapp.model';
+import { UserContact } from '../models/user-contact.model';
 
 export interface AssignedUserCollections {
     assignedUsers       : User[],
@@ -17,4 +18,9 @@ export interface ProjectCollections {
     requirements?   : Requirement[],
     repositories?   : RepositoryApp[],
     comments?       : CommentApp[],
+}
+
+export interface UserCollections {
+    contacts?           : UserContact[],
+    defaultUserGroups?  : UserGroup[],
 }

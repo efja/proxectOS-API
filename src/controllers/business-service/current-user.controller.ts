@@ -18,8 +18,11 @@ import { ResourceService } from '../../services/models/resource.service';
 import { UserService } from '../../services/models/user.service';
 import { BaseController } from '../base.controller';
 import { AssignedUserService } from '../../services/models/assigned-user.service';
-import { AssignedUserCollections, ProjectCollections } from '../../interfaces/entity-collections.interface';
+import { AssignedUserCollections, ProjectCollections, UserCollections } from '../../interfaces/entity-collections.interface';
 import { CommonsModelService } from '../../services/models/commons-model.service';
+import { getStatusCode } from '../../helpers/resquest.helper';
+import { UserContactService } from '../../services/models/user-contact.service';
+import { getUserGroups } from '../../helpers/entity.helper';
 
 // ##################################################################################################
 // ## CONSTANTES
@@ -43,10 +46,11 @@ export class CurrentUserController extends BaseController {
   constructor(
     private assignedUserService = new AssignedUserService,
     private commentAppService = new CommentAppService,
-    // private commonsModelService = new CommonsModelService,
+    private commonsModelService = new CommonsModelService,
     private projectService = new ProjectService,
     private repositoryAppService = new RepositoryAppService,
     private requirementService = new RequirementService,
+    private userContactService = new UserContactService,
     private userService = new UserService,
   ) {
     super();
@@ -77,10 +81,9 @@ export class CurrentUserController extends BaseController {
       let id = fakeUserId; // TODO: quitar cando se implemente o login
 
       const queryParams = new APIFilter();
-      queryParams.includes = false;
+      queryParams.includes = true;
 
       const queryAsisgnedUsers = new APIFilter();
-      queryAsisgnedUsers.copy(queryParams, ["includes"]);
       queryAsisgnedUsers.objectIdFilters = [
         { assignedUser: id },
       ];
@@ -91,7 +94,20 @@ export class CurrentUserController extends BaseController {
           code          : HttpStatus.OK,
           _me           : await this.userService.get(id, queryParams.getQueryString()),
           asisgnedUsers : await this.assignedUserService.getAll(queryAsisgnedUsers.getQueryString()),
-          // commons       : await this.commonsModelService.getCommons(),
+          commons       : await this.commonsModelService.getCommons(),
+        }
+
+        // Contactos
+        const arrayFiltersUserIncludes = [
+          { id: responseMe._me.data.contacts },
+        ];
+
+        responseMe.contacts = await this.queryGetAll(this.userContactService, arrayFiltersUserIncludes, queryParams, [], limit, offset);
+
+        // Grupos por defecto do usuario
+        responseMe.defaultGroups = {
+          code  : HttpStatus.OK,
+          data  : getUserGroups(responseMe._me.data.defaultUserGroups, responseMe.commons.userCommons.userGroups.data),
         }
 
         // Procesando información das asignacións de usuario
@@ -103,7 +119,7 @@ export class CurrentUserController extends BaseController {
           { special: [{ createdBy: id }] },
         ];
 
-        responseMe.comments = await this.queryGetAll(this.commentAppService, arrayFiltersComments, queryParams, ["includes"], limit, offset);
+        responseMe.comments = await this.queryGetAll(this.commentAppService, arrayFiltersComments, queryParams, [], limit, offset);
 
         // Proxectos
         const arrayFiltersProjects = [
@@ -111,7 +127,7 @@ export class CurrentUserController extends BaseController {
           { special: [{ productOwner: id }] },
         ];
 
-        responseMe.projects = await this.queryGetAll(this.projectService, arrayFiltersProjects, queryParams, ["includes"], limit, offset);
+        responseMe.projects = await this.queryGetAll(this.projectService, arrayFiltersProjects, queryParams, [], limit, offset);
 
         // Procesando información dos proxectos
         let projectCollections: ProjectCollections = this.getItemsProjects(responseMe.projects.data);
@@ -121,14 +137,28 @@ export class CurrentUserController extends BaseController {
           { special: [{ id: projectCollections.repositories }] },
         ];
 
-        responseMe.repositories = await this.queryGetAll(this.repositoryAppService, arrayFiltersRepositories, queryParams, ["includes"], limit, offset);
+        responseMe.repositories = await this.queryGetAll(this.repositoryAppService, arrayFiltersRepositories, queryParams, [], limit, offset);
 
         // Requerimentos
         const arrayFiltersRequirements = [
           { special: [{ id: projectCollections.requirements }] },
         ];
 
-        responseMe.requirements = await this.queryGetAll(this.requirementService, arrayFiltersRequirements, queryParams, ["includes"], limit, offset);
+        responseMe.requirements = await this.queryGetAll(this.requirementService, arrayFiltersRequirements, queryParams, [], limit, offset);
+
+        responseMe.code = getStatusCode(
+          [
+            responseMe._me,
+            responseMe.asisgnedUsers,
+            responseMe.comments,
+            responseMe.contacts,
+            responseMe.defaultGroups,
+            responseMe.projects,
+            responseMe.repositories,
+            responseMe.requirements,
+            responseMe.commons,
+          ]
+        );
 
         // const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
 

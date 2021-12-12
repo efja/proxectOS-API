@@ -28,20 +28,21 @@ export interface ResponseMe {
   _me             : ResponseData,
   asisgnedUsers?  : ResponseData,
   comments?       : ResponseData,
+  commons?        : ResponseCommons,
+  contacts?       : ResponseData,
   projects?       : ResponseData,
   repositories?   : ResponseData,
   requirements?   : ResponseData,
-  resources?      : ResponseData,
-  commons?        : ResponseCommons,
+  defaultGroups?  : ResponseData,
 }
 
 // COMÚN
 export interface ResponseUserCommons {
   code              : number,
-  role              : ResponseData,
-  userContactType?  : ResponseData,
-  userGroup?        : ResponseData,
-  userSchedule?     : ResponseData,
+  roles             : ResponseData,
+  userContactTypes? : ResponseData,
+  userGroups?       : ResponseData,
+  userSchedules?    : ResponseData,
 }
 
 // ****************************************************************************************************
@@ -49,9 +50,9 @@ export interface ResponseUserCommons {
 // ****************************************************************************************************
 export interface ResponseCommons {
   code          : number,
-  priority      : ResponseData,
-  stage         : ResponseData,
-  state         : ResponseData,
-  typeapp       : ResponseData,
+  priorities    : ResponseData,
+  stages        : ResponseData,
+  states        : ResponseData,
+  types         : ResponseData,
   userCommons?  : ResponseUserCommons,
 }

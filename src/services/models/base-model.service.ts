@@ -115,7 +115,7 @@ export abstract class BaseModelService<T> {
     }
 
     try {
-      queryResult = await superagent.get(uri)// as ResponseData;
+      queryResult = await superagent.get(uri);
     } catch (error) {
       queryResult = error.response;
     }
