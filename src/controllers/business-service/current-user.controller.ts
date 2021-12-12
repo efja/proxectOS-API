@@ -18,7 +18,8 @@ import { ResourceService } from '../../services/models/resource.service';
 import { UserService } from '../../services/models/user.service';
 import { BaseController } from '../base.controller';
 import { AssignedUserService } from '../../services/models/assigned-user.service';
-import { AssignedUserCollections } from '../../interfaces/assigned-user-collections.interface';
+import { AssignedUserCollections, ProjectCollections } from '../../interfaces/entity-collections.interface';
+import { CommonsModelService } from '../../services/models/commons-model.service';
 
 // ##################################################################################################
 // ## CONSTANTES
@@ -42,62 +43,13 @@ export class CurrentUserController extends BaseController {
   constructor(
     private assignedUserService = new AssignedUserService,
     private commentAppService = new CommentAppService,
+    // private commonsModelService = new CommonsModelService,
     private projectService = new ProjectService,
     private repositoryAppService = new RepositoryAppService,
     private requirementService = new RequirementService,
-    private resourceService = new ResourceService,
     private userService = new UserService,
   ) {
     super();
-  }
-
-  // ************************************************************************************************
-  // ** MÉTODOS CRUD (CREACIÓN)
-  // ************************************************************************************************
-  /**
-   * Crea un novo proxecto. (POST)
-   *
-   * @param req - obxecto da petición
-   * @param res - obxecto da resposta
-   * @param next
-   */
-  public create = async (
-    req: req,
-    res: res,
-    next: next
-  ): Promise<any> => {
-    try {
-      let response;
-
-      const responseData: ResponseData = this.processResponse(req, response, 'CREATE');
-
-      res.status(responseData.code).json(responseData);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  /**
-   * Crea os proxectos dunha dunha lista pasada. (POST)
-   *
-   * @param req - obxecto da petición
-   * @param res - obxecto da resposta
-   * @param next
-   */
-  public createList = async (
-    req: req,
-    res: res,
-    next: next
-  ): Promise<any> => {
-    try {
-      let response;
-
-      const responseData: ResponseData = this.processResponse(req, response, 'CREATE_LIST');
-
-      res.status(responseData.code).json(responseData);
-    } catch (error) {
-      next(error);
-    }
   }
 
   // ************************************************************************************************
@@ -117,16 +69,15 @@ export class CurrentUserController extends BaseController {
   ): Promise<any> => {
     try {
       const {
-        orderBy,
         limit,
-        offset,
-        ...query
+        offset
       } = req.query
 
       const fakeUserId = "616b4dbb9f7ee9e407c28a1b"; // TODO: quitar cando se implemente o login
       let id = fakeUserId; // TODO: quitar cando se implemente o login
 
-      const queryParams = new APIFilter(query);
+      const queryParams = new APIFilter();
+      queryParams.includes = false;
 
       const queryAsisgnedUsers = new APIFilter();
       queryAsisgnedUsers.copy(queryParams, ["includes"]);
@@ -135,33 +86,49 @@ export class CurrentUserController extends BaseController {
       ];
 
       if (id && id != "") {
+        // Obtendo datos básicos
         const responseMe: ResponseMe = {
-          code: HttpStatus.OK,
-          _me: await this.userService.get(id, queryParams.getQueryString()),
-          asisgnedUsers: await this.assignedUserService.getAll(queryAsisgnedUsers.getQueryString()),
-          comments: null,
-          projects: null,
-          commons: null,
+          code          : HttpStatus.OK,
+          _me           : await this.userService.get(id, queryParams.getQueryString()),
+          asisgnedUsers : await this.assignedUserService.getAll(queryAsisgnedUsers.getQueryString()),
+          // commons       : await this.commonsModelService.getCommons(),
         }
 
+        // Procesando información das asignacións de usuario
         let assignedUserCollections: AssignedUserCollections = this.getItemsAsisgnedUsers(responseMe.asisgnedUsers.data);
 
-        const queryComments = new APIFilter();
-        queryComments.copy(queryParams, ["includes"]);
-        queryComments.arrayFilters = [
+        // Comentarios
+        const arrayFiltersComments = [
           { visibleToUserGroups: assignedUserCollections.assignedUserGroups },
           { special: [{ createdBy: id }] },
         ];
 
-        const queryProjects = new APIFilter();
-        queryProjects.copy(queryParams, ["includes"]);
-        queryProjects.arrayFilters = [
+        responseMe.comments = await this.queryGetAll(this.commentAppService, arrayFiltersComments, queryParams, ["includes"], limit, offset);
+
+        // Proxectos
+        const arrayFiltersProjects = [
           { assignedUsers: assignedUserCollections.assignedUsers },
           { special: [{ productOwner: id }] },
         ];
 
-        responseMe.comments = await this.commentAppService.getAll(queryComments.getQueryString(), limit, offset);
-        responseMe.projects = await this.projectService.getAll(queryProjects.getQueryString(), limit, offset);
+        responseMe.projects = await this.queryGetAll(this.projectService, arrayFiltersProjects, queryParams, ["includes"], limit, offset);
+
+        // Procesando información dos proxectos
+        let projectCollections: ProjectCollections = this.getItemsProjects(responseMe.projects.data);
+
+        // Repositorios
+        const arrayFiltersRepositories = [
+          { special: [{ id: projectCollections.repositories }] },
+        ];
+
+        responseMe.repositories = await this.queryGetAll(this.repositoryAppService, arrayFiltersRepositories, queryParams, ["includes"], limit, offset);
+
+        // Requerimentos
+        const arrayFiltersRequirements = [
+          { special: [{ id: projectCollections.requirements }] },
+        ];
+
+        responseMe.requirements = await this.queryGetAll(this.requirementService, arrayFiltersRequirements, queryParams, ["includes"], limit, offset);
 
         // const responseData : ResponseData = this.processResponse(req, response, 'GET_LIST');
 
@@ -181,162 +148,22 @@ export class CurrentUserController extends BaseController {
     }
   }
 
-  /**
-   * Recupera tódolos proxectos. (GET)
-   *
-   * @param req - obxecto da petición
-   * @param res - obxecto da resposta
-   * @param next
-   */
-  public getAll = async (
-    req: req,
-    res: res,
-    next: next
-  ): Promise<any> => {
-    try {
-      const {
-        orderBy,
-        limit,
-        offset,
-        ...query
-      } = req.query
-
-      const queryParams = new APIFilter(query);
-
-      let response = await this.service.getAll(queryParams.getQueryString(), orderBy, limit, offset);
-
-      const responseData: ResponseData = this.processResponse(req, response, 'GET_LIST');
-
-      res.status(responseData.code).json(responseData);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Recupera un proxecto en concreto. (GET)
-   *
-   * @param req - obxecto da petición
-   * @param res - obxecto da resposta
-   * @param next
-   */
-  public get = async (
-    req: req,
-    res: res,
-    next: next
-  ): Promise<any> => {
-    try {
-      const { id } = req.params;
-      const queryParams = new APIFilter(req.query);
-
-      let response = await this.service.get(id, queryParams.getQueryString());
-
-      const responseData: ResponseData = this.processResponse(req, response, 'GET');
-
-      res.status(responseData.code).json(responseData);
-    } catch (error) {
-      next(error);
-    }
-  };
-
   // ************************************************************************************************
-  // ** MÉTODOS CRUD (UPDATE)
+  // ** UTILIDADES
   // ************************************************************************************************
   /**
-   * Actualiza un proxecto. (PUT)
+   * Saca a un conxunto de coleccións tódolos roles, usuarios e grupos dunha resposta de
+   * "AssignedUserService", o obxectivo é poder empregar estas coleccións como filtros para consultas
+   * a outros servicios.
    *
-   * @param req - obxecto da petición
-   * @param res - obxecto da resposta
-   * @param next
+   * @param data atributo "data" coa resposta do servizo "AssignedUserService"
+   * @returns AssignedUserCollections
    */
-  public update = async (
-    req: req,
-    res: res,
-    next: next
-  ): Promise<any> => {
-    try {
-      const { id } = req.params;
-
-      let response;
-
-      const responseData: ResponseData = this.processResponse(req, response, 'UPDATE');
-
-      res.status(responseData.code).json(responseData);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  /**
-   * Actualiza un proxecto. (PATCH)
-   *
-   * @param req - obxecto da petición
-   * @param res - obxecto da resposta
-   * @param next
-   */
-  public modify = async (
-    req: req,
-    res: res,
-    next: next
-  ): Promise<any> => {
-    try {
-      const { id } = req.params;
-      const tempPatch: Operation[] = req.body;
-      let objPatch: Operation[] = [];
-
-      let response;
-
-      if (tempPatch.length > 0) {
-        // Quitanse as modficacións de ids.
-        objPatch = tempPatch.filter(op => !op.path.includes("id"));
-      }
-
-      if (objPatch.length > 0) {
-        response = await this.service.modify(id, objPatch);
-      }
-
-      const responseData: ResponseData = this.processResponse(req, response, 'UPDATE');
-
-      res.status(responseData.code).json(responseData);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  // ************************************************************************************************
-  // ** MÉTODOS CRUD (DELETE)
-  // ************************************************************************************************
-  /**
-   * Elimina un proxecto concreto. (DELETE)
-   *
-   * @param req - obxecto da petición
-   * @param res - obxecto da resposta
-   * @param next
-   */
-  public delete = async (
-    req: req,
-    res: res,
-    next: next
-  ): Promise<any> => {
-    try {
-      const { id } = req.params;
-
-      let response = await this.service.delete(id);
-
-      const responseData: ResponseData = this.processResponse(req, response, 'DELETE');
-
-      res.status(responseData.code).json(responseData);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  //
   private getItemsAsisgnedUsers(data): AssignedUserCollections {
     let result: AssignedUserCollections = {
-      assignedRoles: [],
-      assignedUsers: data.map((obj) => obj.id),
-      assignedUserGroups: [],
+      assignedRoles       : [],
+      assignedUsers       : data.map((obj) => obj.id),
+      assignedUserGroups  : [],
     };
 
     // Buscanse os valores
@@ -356,5 +183,70 @@ export class CurrentUserController extends BaseController {
     });
 
     return result;
+  }
+
+  /**
+   * Saca a un conxunto de coleccións tódolos usuarios asignados, requerimentos, repositorios e comentarios
+   * dunha resposta de "ProjectService", o obxectivo é poder empregar estas coleccións como filtros para consultas
+   * a outros servicios.
+   *
+   * @param data atributo "data" coa resposta do servizo "ProjectService"
+   * @returns ProjectCollections
+   */
+  private getItemsProjects(data): ProjectCollections {
+    let result: ProjectCollections = {
+      assignedUsers  : [],
+      requirements   : [],
+      repositories   : [],
+      comments       : [],
+  };
+
+    // Buscanse os valores
+    let assignedUsers = data.map((obj) => obj.assignedUsers)
+    let requirements = data.map((obj) => obj.requirements);
+    let repositories = data.map((obj) => obj.repositories)
+    let comments = data.map((obj) => obj.comments);
+
+    // Limplianse os valores nulos, en caso de habelos
+    assignedUsers = cleanDeep(assignedUsers);
+    requirements = cleanDeep(requirements);
+    repositories = cleanDeep(repositories);
+    comments = cleanDeep(comments);
+
+    // Agrupanse tódolos arrays nun só (o que se vai a devolver)
+    assignedUsers.forEach(element => {
+      result.assignedUsers.push(...element)
+    });
+    requirements.forEach(element => {
+      result.requirements.push(...element)
+    });
+    repositories.forEach(element => {
+      result.repositories.push(...element)
+    });
+    comments.forEach(element => {
+      result.comments.push(...element)
+    });
+
+    return result;
+  }
+
+  /**
+   * Helper para xerar peticións estándar para un getAll a un servicio dos modelos de datos.
+   *
+   * @param service servicio para facer a consulta
+   * @param arrayFilters filtros especiais a incluir
+   * @param queryParams parámetros pasados na URI
+   * @param copyQuery parámetros que se queren copiar da URI
+   * @param limit limite de resultados
+   * @param offset páxina de resultados
+   * @returns ResponseData
+   */
+  public async queryGetAll(service: any, arrayFilters: any, queryParams: APIFilter, copyQuery: string[], limit: Number, offset: Number): Promise<ResponseData> {
+    const queryFilters = new APIFilter();
+
+    queryFilters.copy(queryParams, copyQuery);
+    queryFilters.arrayFilters = arrayFilters;
+
+    return await service.getAll(queryFilters.getQueryString(), limit, offset);
   }
 }

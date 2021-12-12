@@ -24,15 +24,15 @@ export interface ResultQuery {
 // ** USUARIOS
 // ****************************************************************************************************
 export interface ResponseMe {
-  code          : number,
-  _me           : ResponseData,
-  asisgnedUsers : ResponseData,
-  comments      : ResponseData,
-  projects      : ResponseData,
-  repositories? : ResponseData,
-  requirements? : ResponseData,
-  resources?    : ResponseData,
-  commons       : ResponseCommons,
+  code            : number,
+  _me             : ResponseData,
+  asisgnedUsers?  : ResponseData,
+  comments?       : ResponseData,
+  projects?       : ResponseData,
+  repositories?   : ResponseData,
+  requirements?   : ResponseData,
+  resources?      : ResponseData,
+  commons?        : ResponseCommons,
 }
 
 // COMÚN
@@ -40,7 +40,7 @@ export interface ResponseUserCommons {
   code              : number,
   role              : ResponseData,
   userContactType?  : ResponseData,
-  userGroup         : ResponseData,
+  userGroup?        : ResponseData,
   userSchedule?     : ResponseData,
 }
 
