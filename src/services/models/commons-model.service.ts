@@ -72,7 +72,7 @@ export class CommonsModelService {
    *
    * @returns ResponseUserCommons
    */
-  private async getUserCommons(): Promise<ResponseUserCommons> {
+  public async getUserCommons(): Promise<ResponseUserCommons> {
     let responseUserCommons : ResponseUserCommons = {
       code              : null,
       roles             : await getExternalResource(`${this.uri}/roles`),
