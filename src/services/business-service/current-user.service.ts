@@ -119,6 +119,9 @@ export class CurrentUserService {
     return responseMe;
   }
 
+  // ------------------------------------------------------------------------------------------------
+  // -- GET - COMÚNS
+  // ------------------------------------------------------------------------------------------------
   public async getMeBasic(id: string, queryParams: APIFilter): Promise<ResponseMe> {
     const queryAsisgnedUsers = new APIFilter();
     queryAsisgnedUsers.objectIdFilters = [
@@ -184,7 +187,7 @@ export class CurrentUserService {
   }
 
   // ------------------------------------------------------------------------------------------------
-  // -- GET - COMMENTS
+  // -- GET - ME -> COMMENTS
   // ------------------------------------------------------------------------------------------------
   public async getAllComments(userId: string): Promise<ResponseData> {
     let result: ResponseData = {
@@ -223,7 +226,7 @@ export class CurrentUserService {
   }
 
   // ------------------------------------------------------------------------------------------------
-  // -- GET - PROJECTS
+  // -- GET - ME -> PROJECTS
   // ------------------------------------------------------------------------------------------------
   public async getAllProjects(userId: string): Promise<ResponseData> {
     let result: ResponseData = {
@@ -262,7 +265,7 @@ export class CurrentUserService {
   }
 
   // ------------------------------------------------------------------------------------------------
-  // -- GET - PROJECTS -> REPOSITORIES
+  // -- GET - ME -> PROJECTS -> REPOSITORIES
   // ------------------------------------------------------------------------------------------------
   public async getAllRepositories(userId: string, projectId: string): Promise<ResponseData> {
     let result: ResponseData = {
@@ -306,7 +309,7 @@ export class CurrentUserService {
   }
 
   // ------------------------------------------------------------------------------------------------
-  // -- GET - PROJECTS -> REQUIREMENTS
+  // -- GET - ME -> PROJECTS -> REQUIREMENTS
   // ------------------------------------------------------------------------------------------------
   public async getAllRequirements(userId: string, projectId: string): Promise<ResponseData> {
     let result: ResponseData = {
@@ -358,7 +361,7 @@ export class CurrentUserService {
   }
 
   // ------------------------------------------------------------------------------------------------
-  // -- GET - USER -> CONTACTS
+  // -- GET - ME -> CONTACTS
   // ------------------------------------------------------------------------------------------------
   public async getAllContacts(userId: string): Promise<ResponseData> {
     let result: ResponseData = {
@@ -376,7 +379,7 @@ export class CurrentUserService {
   }
 
   // ------------------------------------------------------------------------------------------------
-  // -- GET - USER -> SCHEDULE
+  // -- GET - ME -> SCHEDULE
   // ------------------------------------------------------------------------------------------------
   public async getSchedule(userId: string): Promise<ResponseData> {
     let result: ResponseData = {
